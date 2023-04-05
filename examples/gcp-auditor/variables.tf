@@ -1,7 +1,15 @@
 variable "name" {
-  default = ""
+  type = string
 }
 
 variable "region" {
-  default = ""
+  type = string
+}
+
+variable "organization_id" {
+  type = string
+}
+
+variable "filter" {
+  type = string
 }
