@@ -12,7 +12,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestGkeModule(t *testing.T) {
+func TestAuditorModule(t *testing.T) {
 	//Basic module tests
 
 	approvedRegions := []string{
@@ -27,7 +27,7 @@ func TestGkeModule(t *testing.T) {
 		"us-south1",
 	}
 
-	terraformDir := "../examples/auditor"
+	terraformDir := "../examples/gcp-auditor"
 
 	test_structure.RunTestStage(t, "setup", func() {
 
