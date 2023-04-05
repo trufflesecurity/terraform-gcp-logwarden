@@ -1,0 +1,5 @@
+formatter: "md table"
+recursive:
+  enabled: true
+output:
+  file: README.md
