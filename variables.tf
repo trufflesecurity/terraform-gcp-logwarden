@@ -25,3 +25,8 @@ LOG_ID("cloudaudit.googleapis.com/activity") OR LOG_ID("externalaudit.googleapis
 -protoPayload.serviceName="k8s.io"
 EOF
 }
+
+variable "docker_image" {
+  type        = string
+  description = "Docker image for the auditor tool. Used by Cloud Run"
+}

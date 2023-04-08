@@ -5,7 +5,7 @@ resource "google_cloud_run_v2_service" "auditor" {
 
   template {
     containers {
-      image = ""
+      image = var.docker_image
     }
   }
 }
