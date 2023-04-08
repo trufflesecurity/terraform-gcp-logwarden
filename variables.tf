@@ -8,6 +8,11 @@ variable "project_id" {
   description = "ID of the parent project. Needed for service account IAM bindings."
 }
 
+variable "region" {
+  type        = string
+  description = "Region to place the CloudRun function in."
+}
+
 variable "organization_id" {
   type        = string
   description = "ID of the parent organization."

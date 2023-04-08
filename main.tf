@@ -1,3 +1,15 @@
+resource "google_cloud_run_v2_service" "auditor" {
+  name     = "gcp-auditor"
+  location = var.region
+  ingress  = ""
+
+  template {
+    containers {
+      image = ""
+    }
+  }
+}
+
 resource "google_logging_organization_sink" "audit-logs" {
   name        = "${var.name}-audit-logs"
   description = "audit logs for the organization"
