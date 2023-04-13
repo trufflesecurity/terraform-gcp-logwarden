@@ -1,20 +1,93 @@
+resource "google_project_service" "auditor" {
+  service = "run.googleapis.com"
+}
+
+resource "google_service_account" "auditor" {
+  account_id   = "gcp-auditor-${var.environment}"
+  display_name = "GCP Auditor Service Account"
+}
+
 resource "google_cloud_run_v2_service" "auditor" {
-  name     = "gcp-auditor"
+  name     = "gcp-auditor-${var.environment}"
   location = var.region
-  ingress  = ""
+  ingress  = var.ingress
 
   template {
+    service_account_name = google_service_account.auditor.email
+    scaling {
+      max_instance_count = 1
+      min_instance_count = 1
+    }
     containers {
       image = var.docker_image
     }
+
+    env {
+      for_each = google_secret_manager_secret_version.secrets_version
+
+      name = each.key
+      value_from {
+        secret_key_ref {
+          name = each.value.secret.name
+          key  = "latest"
+        }
+      }
+    }
+    volumes {
+      name = "rego-policy-declarations"
+      gcs {
+        bucket = google_storage_bucket.rego_policies.name
+        path   = "/"
+      }
+    }
+  }
+
+  traffic {
+    percent         = 100
+    latest_revision = true
+  }
+
+  depends_on = [google_project_service.auditor]
+}
+
+resource "google_secret_manager_secret" "auditor_secrets" {
+  for_each  = var.secrets
+  secret_id = each.key
+  replication {
+    automatic = true
+  }
+  depends_on = [google_project_service.auditor]
+}
+
+resource "google_secret_manager_secret_version" "auditor_secrets_version" {
+  for_each    = var.secrets
+  secret      = google_secret_manager_secret.auditor_secrets[each.key].id
+  secret_data = each.value
+  depends_on  = [google_project_service.auditor]
+}
+
+
+data "google_iam_policy" "auditor_bucket" {
+  binding {
+    members = [google_service_account.auditor.email]
+    role    = "roles/storage.objectViewer"
   }
 }
 
+resource "google_storage_bucket_iam_policy" "auditor" {
+  bucket      = google_storage_bucket.rego_policies.name
+  policy_data = data.google_iam_policy.auditor_bucket.policy_data
+
+}
+
+resource "google_storage_bucket" "rego_policies" {
+  name = "rego-policy-declarations-${var.environment}"
+}
+
 resource "google_logging_organization_sink" "audit-logs" {
-  name        = "${var.name}-audit-logs"
+  name        = "audit-logs-${var.environment}"
   description = "audit logs for the organization"
   org_id      = var.organization_id
-
   destination = "pubsub.googleapis.com/${google_pubsub_topic.audit-logs.id}"
 
   include_children = true
@@ -29,19 +102,19 @@ data "google_iam_policy" "sink_topic_iam_policy_data" {
   }
 }
 
-resource "google_pubsub_topic_iam_policy" "sink_topic_iam_poicy" {
+resource "google_pubsub_topic_iam_policy" "sink_topic_iam_policy" {
   project     = var.project_id
   policy_data = data.google_iam_policy.sink_topic_iam_policy_data.policy_data
   topic       = google_pubsub_topic.audit-logs.name
 }
 
 resource "google_pubsub_topic" "audit-logs" {
-  name    = "${var.name}-audit-logs"
+  name    = "audit-logs-${var.environment}"
   project = var.project_id
 }
 
 resource "google_pubsub_subscription" "gcp-auditor" {
-  name    = "${var.name}-gcp-auditor"
+  name    = "gcp-auditor-${var.environment}"
   topic   = google_pubsub_topic.audit-logs.name
   project = var.project_id
 
@@ -61,7 +134,7 @@ resource "google_pubsub_subscription" "gcp-auditor" {
 }
 
 resource "google_pubsub_subscription" "gcp-auditor-test" {
-  name    = "${var.name}-gcp-auditor-test"
+  name    = "gcp-auditor-test-${var.environment}"
   topic   = google_pubsub_topic.audit-logs.name
   project = var.project_id
 

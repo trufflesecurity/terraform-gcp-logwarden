@@ -1,11 +1,17 @@
-variable "name" {
+variable "environment" {
   type        = string
-  description = "Name of app, service, or context using this module."
+  description = "Environment of app, service, or context using this module."
 }
 
 variable "project_id" {
   type        = string
   description = "ID of the parent project. Needed for service account IAM bindings."
+}
+
+variable "ingress" {
+  description = "Ingress settings for the Google Cloud Run service"
+  type        = string
+  default     = "all"
 }
 
 variable "region" {
@@ -29,4 +35,9 @@ EOF
 variable "docker_image" {
   type        = string
   description = "Docker image for the auditor tool. Used by Cloud Run"
+}
+
+variable "secrets" {
+  type        = map(string)
+  description = "Secrets to be stored in Secret Manager"
 }
