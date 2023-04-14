@@ -6,7 +6,7 @@ Terraform module for the GCP auditor
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | ^1.4.4 |
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.4.0 |
 | <a name="requirement_google"></a> [google](#requirement\_google) | 4.48.0 |
 
 ## Providers
