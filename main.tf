@@ -7,8 +7,17 @@ resource "google_service_account" "auditor" {
   display_name = "GCP Auditor Service Account"
 }
 
+resource "google_cloud_v2_service_iam_member" "auditor" {
+  project  = google_cloud_run_v2_service.auditor.project
+  location = google_cloud_run_v2_service.auditor.location
+  name     = google_cloud_run_v2_service.auditor.name
+  role     = "roles/run.invoker"
+  member   = "serviceAccount:${google_service_account.auditor.email}"
+}
+
 resource "google_cloud_run_v2_service" "auditor" {
   name     = "gcp-auditor-${var.environment}"
+  project  = var.project_id
   location = var.region
   ingress  = var.ingress
 
@@ -66,18 +75,10 @@ resource "google_secret_manager_secret_version" "auditor_secrets_version" {
   depends_on  = [google_project_service.auditor]
 }
 
-
-data "google_iam_policy" "auditor_bucket" {
-  binding {
-    members = [google_service_account.auditor.email]
-    role    = "roles/storage.objectViewer"
-  }
-}
-
-resource "google_storage_bucket_iam_policy" "auditor" {
-  bucket      = google_storage_bucket.rego_policies.name
-  policy_data = data.google_iam_policy.auditor_bucket.policy_data
-
+resource "google_storage_bucket_iam_member" "auditor" {
+  bucket = google_storage_bucket.rego_policies.name
+  role   = "roles/storage.objectViewer"
+  member = "serviceAccount:${google_service_account.auditor.email}"
 }
 
 resource "google_storage_bucket" "rego_policies" {
@@ -95,17 +96,11 @@ resource "google_logging_organization_sink" "audit-logs" {
   filter = var.logging_sink_filter
 }
 
-data "google_iam_policy" "sink_topic_iam_policy_data" {
-  binding {
-    members = [google_logging_organization_sink.audit-logs.writer_identity]
-    role    = "roles/pubsub.publisher"
-  }
-}
-
-resource "google_pubsub_topic_iam_policy" "sink_topic_iam_policy" {
-  project     = var.project_id
-  policy_data = data.google_iam_policy.sink_topic_iam_policy_data.policy_data
-  topic       = google_pubsub_topic.audit-logs.name
+resource "google_pubsub_topic_iam_member" "sink_topic" {
+  project = google_pubsub_topic.audit-logs.project
+  topic   = google_pubsub_topic.audit-logs.name
+  member  = google_logging_organization_sink.audit-logs.writer_identity
+  role    = "roles/pubsub.publisher"
 }
 
 resource "google_pubsub_topic" "audit-logs" {

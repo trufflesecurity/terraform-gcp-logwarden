@@ -1,4 +1,4 @@
-locals {
+Locals {
   terraform_service_account = "terraform-testing@thog-admin.iam.gserviceaccount.com"
   project                   = "terraform-test-project-0000"
 }

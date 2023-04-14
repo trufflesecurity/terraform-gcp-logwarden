@@ -47,8 +47,10 @@ func TestAuditorModule(t *testing.T) {
 			VarFiles: []string{"../../tests/test.vars"},
 
 			Vars: map[string]interface{}{
-				"name":   uniqueId,
-				"region": gcpRegion,
+				// Since this is a non-generic module, the name is fixed, so we'll
+				// randomize the environment name to avoid collisions
+				"environment": uniqueId,
+				"region":      gcpRegion,
 			},
 
 			NoColor: true,
