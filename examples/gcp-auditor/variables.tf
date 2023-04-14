@@ -1,8 +1,8 @@
-variable "name" {
+variable "region" {
   type = string
 }
 
-variable "region" {
+variable "environment" {
   type = string
 }
 
