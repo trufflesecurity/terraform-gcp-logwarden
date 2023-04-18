@@ -11,7 +11,7 @@ variable "project_id" {
 variable "ingress" {
   description = "Ingress settings for the Google Cloud Run service"
   type        = string
-  default     = "all"
+  default     = "INGRESS_TRAFFIC_INTERNAL_ONLY"
 }
 
 variable "region" {
