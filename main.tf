@@ -7,13 +7,13 @@ resource "google_service_account" "auditor" {
   display_name = "GCP Auditor Service Account"
 }
 
-resource "google_cloud_v2_service_iam_member" "auditor" {
-  project  = google_cloud_run_v2_service.auditor.project
-  location = google_cloud_run_v2_service.auditor.location
-  name     = google_cloud_run_v2_service.auditor.name
-  role     = "roles/run.invoker"
-  member   = "serviceAccount:${google_service_account.auditor.email}"
-}
+#resource "google_cloud_v2_service_iam_member" "auditor" {
+#project  = google_cloud_run_v2_service.auditor.project
+#location = google_cloud_run_v2_service.auditor.location
+#name     = google_cloud_run_v2_service.auditor.name
+#role     = "roles/run.invoker"
+#member   = "serviceAccount:${google_service_account.auditor.email}"
+#}
 
 resource "google_cloud_run_v2_service" "auditor" {
   name     = "gcp-auditor-${var.environment}"
@@ -22,38 +22,42 @@ resource "google_cloud_run_v2_service" "auditor" {
   ingress  = var.ingress
 
   template {
-    service_account_name = google_service_account.auditor.email
+
+    service_account = google_service_account.auditor.email
+
     scaling {
       max_instance_count = 1
       min_instance_count = 1
     }
-    containers {
-      image = var.docker_image
-    }
 
-    env {
-      for_each = google_secret_manager_secret_version.secrets_version
-
-      name = each.key
-      value_from {
-        secret_key_ref {
-          name = each.value.secret.name
-          key  = "latest"
+    volumes {
+      name = "auditor-secrets"
+      dynamic "secret" {
+        for_each = google_secret_manager_secret.auditor_secrets
+        content {
+          secret       = secret.value["secret_id"]
+          default_mode = 256
+          items {
+            version = "latest"
+            path    = secret.value["secret_id"]
+            mode    = 256
+          }
         }
       }
     }
-    volumes {
-      name = "rego-policy-declarations"
-      gcs {
-        bucket = google_storage_bucket.rego_policies.name
-        path   = "/"
+
+    containers {
+      image = var.docker_image
+      volume_mounts {
+        name       = "auditor-secrets"
+        mount_path = "/secrets"
       }
     }
+
   }
 
   traffic {
-    percent         = 100
-    latest_revision = true
+    percent = 100
   }
 
   depends_on = [google_project_service.auditor]
@@ -82,7 +86,8 @@ resource "google_storage_bucket_iam_member" "auditor" {
 }
 
 resource "google_storage_bucket" "rego_policies" {
-  name = "rego-policy-declarations-${var.environment}"
+  name     = "rego-policy-declarations-${var.environment}"
+  location = var.region
 }
 
 resource "google_logging_organization_sink" "audit-logs" {
@@ -101,6 +106,12 @@ resource "google_pubsub_topic_iam_member" "sink_topic" {
   topic   = google_pubsub_topic.audit-logs.name
   member  = google_logging_organization_sink.audit-logs.writer_identity
   role    = "roles/pubsub.publisher"
+}
+
+resource "google_pubsub_subscription_iam_member" "auditor" {
+  subscription = google_pubsub_subscription.gcp-auditor.name
+  member       = google_service_account.auditor.email
+  role         = "roles/pubsub.subscriber"
 }
 
 resource "google_pubsub_topic" "audit-logs" {
