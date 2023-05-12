@@ -6,7 +6,7 @@ resource "google_project_service" "cloudrun" {
 resource "google_cloud_run_v2_service" "auditor" {
   name     = "gcp-auditor"
   location = var.region
-  ingress  = ""
+  ingress  = var.ingress
 
   template {
     scaling {
@@ -15,18 +15,6 @@ resource "google_cloud_run_v2_service" "auditor" {
     }
     containers {
       image = var.docker_image
-
-      # Add the for_each loop to handle secret environment variables
-      for_each = toset(google_secret_manager_secret.secrets[*].id)
-      env {
-        name = each.key
-        value_source {
-          secret_key_ref {
-            secret  = each.key.id
-            version = "latest"
-          }
-        }
-      }
     }
     volumes {
       name = "rego-policy-declarations"
