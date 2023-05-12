@@ -1,99 +1,100 @@
-resource "google_project_service" "auditor" {
+resource "google_project_service" "cloudrun" {
   service = "run.googleapis.com"
 }
 
-resource "google_service_account" "auditor" {
-  account_id   = "gcp-auditor-${var.environment}"
-  display_name = "GCP Auditor Service Account"
-}
-
-#resource "google_cloud_v2_service_iam_member" "auditor" {
-#project  = google_cloud_run_v2_service.auditor.project
-#location = google_cloud_run_v2_service.auditor.location
-#name     = google_cloud_run_v2_service.auditor.name
-#role     = "roles/run.invoker"
-#member   = "serviceAccount:${google_service_account.auditor.email}"
-#}
-
+#TODO min/max instances 1
 resource "google_cloud_run_v2_service" "auditor" {
-  name     = "gcp-auditor-${var.environment}"
-  project  = var.project_id
+  name     = "gcp-auditor"
   location = var.region
-  ingress  = var.ingress
+  ingress  = ""
 
   template {
-
-    service_account = google_service_account.auditor.email
-
     scaling {
       max_instance_count = 1
       min_instance_count = 1
     }
+    containers {
+      image = var.docker_image
+    }
+    # Add the for_each loop to handle secret environment variables
+    env {
+      for_each = google_secret_manager_secret_version.secrets_version
 
-    volumes {
-      name = "auditor-secrets"
-      dynamic "secret" {
-        for_each = google_secret_manager_secret.auditor_secrets
-        content {
-          secret       = secret.value["secret_id"]
-          default_mode = 256
-          items {
-            version = "latest"
-            path    = secret.value["secret_id"]
-            mode    = 256
-          }
+      name = each.key
+      value_from {
+        secret_key_ref {
+          name = each.value.secret.name
+          key  = "latest"
         }
       }
     }
-
-    containers {
-      image = var.docker_image
-      volume_mounts {
-        name       = "auditor-secrets"
-        mount_path = "/secrets"
+    volumes {
+      name = "rego-policy-declarations"
+      gcs {
+        bucket = google_storage_bucket.rego_policies.name
+        path   = "/"
       }
     }
-
   }
 
   traffic {
-    percent = 100
+    percent         = 100
+    latest_revision = true
   }
 
-  depends_on = [google_project_service.auditor]
+  depends_on = [google_project_service.cloudrun]
 }
 
-resource "google_secret_manager_secret" "auditor_secrets" {
+resource "google_secret_manager_secret" "secrets" {
   for_each  = var.secrets
   secret_id = each.key
   replication {
     automatic = true
   }
-  depends_on = [google_project_service.auditor]
+  depends_on = [google_project_service.cloudrun]
 }
 
-resource "google_secret_manager_secret_version" "auditor_secrets_version" {
+resource "google_secret_manager_secret_version" "secrets_version" {
   for_each    = var.secrets
-  secret      = google_secret_manager_secret.auditor_secrets[each.key].id
+  secret      = google_secret_manager_secret.secrets[each.key].id
   secret_data = each.value
-  depends_on  = [google_project_service.auditor]
+  depends_on  = [google_project_service.cloudrun]
 }
 
-resource "google_storage_bucket_iam_member" "auditor" {
-  bucket = google_storage_bucket.rego_policies.name
-  role   = "roles/storage.objectViewer"
-  member = "serviceAccount:${google_service_account.auditor.email}"
+resource "google_cloud_run_service" "default" {
+  name     = "my-cloud-run-service"
+  location = var.region
+
+  template {
+    spec {
+      containers {
+        image = var.docker_image
+      }
+
+    }
+  }
+
+
+  depends_on = [google_project_service.cloudrun]
+}
+
+resource "google_cloud_run_service_iam_member" "public_access" {
+  service    = google_cloud_run_service.default.name
+  location   = google_cloud_run_service.default.location
+  role       = "roles/run.invoker"
+  member     = "allUsers"
+  depends_on = [google_project_service.cloudrun]
 }
 
 resource "google_storage_bucket" "rego_policies" {
-  name     = "rego-policy-declarations-${var.environment}"
-  location = var.region
+  name = "rego-policy-declarations-${var.project_id}"
 }
 
 resource "google_logging_organization_sink" "audit-logs" {
-  name        = "audit-logs-${var.environment}"
+  name        = "${var.name}-audit-logs"
   description = "audit logs for the organization"
   org_id      = var.organization_id
+
   destination = "pubsub.googleapis.com/${google_pubsub_topic.audit-logs.id}"
 
   include_children = true
@@ -101,26 +102,26 @@ resource "google_logging_organization_sink" "audit-logs" {
   filter = var.logging_sink_filter
 }
 
-resource "google_pubsub_topic_iam_member" "sink_topic" {
-  project = google_pubsub_topic.audit-logs.project
-  topic   = google_pubsub_topic.audit-logs.name
-  member  = google_logging_organization_sink.audit-logs.writer_identity
-  role    = "roles/pubsub.publisher"
+data "google_iam_policy" "sink_topic_iam_policy_data" {
+  binding {
+    members = [google_logging_organization_sink.audit-logs.writer_identity]
+    role    = "roles/pubsub.publisher"
+  }
 }
 
-resource "google_pubsub_subscription_iam_member" "auditor" {
-  subscription = google_pubsub_subscription.gcp-auditor.name
-  member       = google_service_account.auditor.email
-  role         = "roles/pubsub.subscriber"
+resource "google_pubsub_topic_iam_policy" "sink_topic_iam_poicy" {
+  project     = var.project_id
+  policy_data = data.google_iam_policy.sink_topic_iam_policy_data.policy_data
+  topic       = google_pubsub_topic.audit-logs.name
 }
 
 resource "google_pubsub_topic" "audit-logs" {
-  name    = "audit-logs-${var.environment}"
+  name    = "${var.name}-audit-logs"
   project = var.project_id
 }
 
 resource "google_pubsub_subscription" "gcp-auditor" {
-  name    = "gcp-auditor-${var.environment}"
+  name    = "${var.name}-gcp-auditor"
   topic   = google_pubsub_topic.audit-logs.name
   project = var.project_id
 
@@ -140,7 +141,7 @@ resource "google_pubsub_subscription" "gcp-auditor" {
 }
 
 resource "google_pubsub_subscription" "gcp-auditor-test" {
-  name    = "gcp-auditor-test-${var.environment}"
+  name    = "${var.name}-gcp-auditor-test"
   topic   = google_pubsub_topic.audit-logs.name
   project = var.project_id
 
