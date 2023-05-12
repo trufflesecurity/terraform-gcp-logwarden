@@ -15,16 +15,17 @@ resource "google_cloud_run_v2_service" "auditor" {
     }
     containers {
       image = var.docker_image
-    }
-    # Add the for_each loop to handle secret environment variables
-    env {
-      for_each = google_secret_manager_secret_version.secrets_version
 
-      name = each.key
-      value_from {
-        secret_key_ref {
-          name = each.value.secret.name
-          key  = "latest"
+      # Add the for_each loop to handle secret environment variables
+      env {
+        for_each = google_secret_manager_secret_version.secrets_version
+
+        name = each.key
+        value_from {
+          secret_key_ref {
+            name = each.value.secret.name
+            key  = "latest"
+          }
         }
       }
     }
