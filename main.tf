@@ -18,7 +18,7 @@ resource "google_cloud_run_v2_service" "auditor" {
 
       # Add the for_each loop to handle secret environment variables
       env {
-        for_each = toset(google_secret_manager_secret_version.secrets_version)
+        for_each = toset(google_secret_manager_secret_version.secrets_version[*].secret_data)
 
         name = each.key
         value_from {
@@ -62,22 +62,6 @@ resource "google_secret_manager_secret_version" "secrets_version" {
   depends_on  = [google_project_service.cloudrun]
 }
 
-resource "google_cloud_run_service" "default" {
-  name     = "my-cloud-run-service"
-  location = var.region
-
-  template {
-    spec {
-      containers {
-        image = var.docker_image
-      }
-
-    }
-  }
-
-
-  depends_on = [google_project_service.cloudrun]
-}
 
 resource "google_cloud_run_service_iam_member" "public_access" {
   service    = google_cloud_run_service.default.name
@@ -92,7 +76,7 @@ resource "google_storage_bucket" "rego_policies" {
 }
 
 resource "google_logging_organization_sink" "audit-logs" {
-  name        = "${var.name}-audit-logs"
+  name        = "audit-logs-${var.environment}"
   description = "audit logs for the organization"
   org_id      = var.organization_id
 
@@ -117,12 +101,12 @@ resource "google_pubsub_topic_iam_policy" "sink_topic_iam_poicy" {
 }
 
 resource "google_pubsub_topic" "audit-logs" {
-  name    = "${var.name}-audit-logs"
+  name    = "audit-logs-${var.environment}"
   project = var.project_id
 }
 
 resource "google_pubsub_subscription" "gcp-auditor" {
-  name    = "${var.name}-gcp-auditor"
+  name    = "gcp-auditor-${var.environment}"
   topic   = google_pubsub_topic.audit-logs.name
   project = var.project_id
 
@@ -142,7 +126,7 @@ resource "google_pubsub_subscription" "gcp-auditor" {
 }
 
 resource "google_pubsub_subscription" "gcp-auditor-test" {
-  name    = "${var.name}-gcp-auditor-test"
+  name    = "gcp-auditor-test"
   topic   = google_pubsub_topic.audit-logs.name
   project = var.project_id
 
