@@ -19,8 +19,7 @@ resource "google_cloud_run_v2_service" "auditor" {
       # Add the for_each loop to handle secret environment variables
       env {
         for_each = toset(google_secret_manager_secret_version.secrets_version[*].secret_data)
-
-        name = each.key
+        name     = each.key
         value_from {
           secret_key_ref {
             name = each.value.secret.name
@@ -64,15 +63,16 @@ resource "google_secret_manager_secret_version" "secrets_version" {
 
 
 resource "google_cloud_run_service_iam_member" "public_access" {
-  service    = google_cloud_run_service.default.name
-  location   = google_cloud_run_service.default.location
+  service    = google_cloud_run_v2_service.auditor.name
+  location   = google_cloud_run_v2_service.auditor.location
   role       = "roles/run.invoker"
   member     = "allUsers"
   depends_on = [google_project_service.cloudrun]
 }
 
 resource "google_storage_bucket" "rego_policies" {
-  name = "rego-policy-declarations-${var.project_id}"
+  name     = "rego-policy-declarations-${var.project_id}"
+  location = "US"
 }
 
 resource "google_logging_organization_sink" "audit-logs" {
