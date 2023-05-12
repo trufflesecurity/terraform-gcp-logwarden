@@ -18,7 +18,7 @@ resource "google_cloud_run_v2_service" "auditor" {
 
       # Add the for_each loop to handle secret environment variables
       env {
-        for_each = google_secret_manager_secret_version.secrets_version
+        for_each = toset(google_secret_manager_secret_version.secrets_version)
 
         name = each.key
         value_from {
