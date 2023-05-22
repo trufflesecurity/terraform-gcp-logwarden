@@ -1,10 +1,13 @@
+locals {
+}
+
 resource "google_project_service" "cloudrun" {
   service = "run.googleapis.com"
 }
 
 #TODO min/max instances 1
-resource "google_cloud_run_v2_service" "auditor" {
-  name     = "gcp-auditor"
+resource "google_cloud_run_v2_service" "main" {
+  name     = "truffle-logwarden-${var.region}-${var.environment}"
   location = var.region
   ingress  = var.ingress
 
@@ -16,55 +19,29 @@ resource "google_cloud_run_v2_service" "auditor" {
     containers {
       image = var.docker_image
     }
-    volumes {
-      name = "rego-policy-declarations"
-      gcs {
-        bucket = google_storage_bucket.rego_policies.name
-        path   = "/"
-      }
-    }
-  }
-
-  traffic {
-    percent         = 100
-    latest_revision = true
   }
 
   depends_on = [google_project_service.cloudrun]
 }
-
-resource "google_secret_manager_secret" "secrets" {
-  for_each  = var.secrets
-  secret_id = each.key
-  replication {
-    automatic = true
-  }
-  depends_on = [google_project_service.cloudrun]
-}
-
-resource "google_secret_manager_secret_version" "secrets_version" {
-  for_each    = var.secrets
-  secret      = google_secret_manager_secret.secrets[each.key].id
-  secret_data = each.value
-  depends_on  = [google_project_service.cloudrun]
-}
-
 
 resource "google_cloud_run_service_iam_member" "public_access" {
-  service    = google_cloud_run_v2_service.auditor.name
-  location   = google_cloud_run_v2_service.auditor.location
+  service    = google_cloud_run_v2_service.main.name
+  location   = google_cloud_run_v2_service.main.location
   role       = "roles/run.invoker"
   member     = "allUsers"
   depends_on = [google_project_service.cloudrun]
 }
 
 resource "google_storage_bucket" "rego_policies" {
-  name     = "rego-policy-declarations-${var.project_id}"
+  name     = "truffle-logwarden-policies-${var.region}-${var.environment}"
   location = "US"
+
+  public_access_prevention    = "enforced"
+  uniform_bucket_level_access = "true"
 }
 
 resource "google_logging_organization_sink" "audit-logs" {
-  name        = "audit-logs-${var.environment}"
+  name        = "truffle-logwarden-audit-logs-${var.region}-${var.environment}"
   description = "audit logs for the organization"
   org_id      = var.organization_id
 
@@ -89,12 +66,12 @@ resource "google_pubsub_topic_iam_policy" "sink_topic_iam_poicy" {
 }
 
 resource "google_pubsub_topic" "audit-logs" {
-  name    = "audit-logs-${var.environment}"
+  name    = "truffle-logwarden-audit-logs-${var.region}-${var.environment}"
   project = var.project_id
 }
 
-resource "google_pubsub_subscription" "gcp-auditor" {
-  name    = "gcp-auditor-${var.environment}"
+resource "google_pubsub_subscription" "logwarden" {
+  name    = "truffle-logwarden-audit-logs-sub-${var.region}-${var.environment}"
   topic   = google_pubsub_topic.audit-logs.name
   project = var.project_id
 
@@ -113,8 +90,8 @@ resource "google_pubsub_subscription" "gcp-auditor" {
   enable_message_ordering = false
 }
 
-resource "google_pubsub_subscription" "gcp-auditor-test" {
-  name    = "gcp-auditor-test"
+resource "google_pubsub_subscription" "logwarden-test" {
+  name    = "truffle-logwarden-audit-logs-sub-test-${var.region}-${var.environment}"
   topic   = google_pubsub_topic.audit-logs.name
   project = var.project_id
 

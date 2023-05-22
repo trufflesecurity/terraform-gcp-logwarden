@@ -36,8 +36,3 @@ variable "docker_image" {
   type        = string
   description = "Docker image for the auditor tool. Used by Cloud Run"
 }
-
-variable "secrets" {
-  type        = map(string)
-  description = "Secrets to be stored in Secret Manager"
-}

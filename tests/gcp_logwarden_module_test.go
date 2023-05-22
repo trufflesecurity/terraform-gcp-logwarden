@@ -12,7 +12,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestAuditorModule(t *testing.T) {
+func TestLogwardenModule(t *testing.T) {
 	//Basic module tests
 
 	approvedRegions := []string{

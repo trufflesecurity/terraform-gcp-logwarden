@@ -1,5 +1,6 @@
-# terraform-gcp-auditor
-Terraform module for the GCP auditor
+# terraform-gcp-logwarden
+
+Terraform module for GCP Logwarden
 
 <!-- BEGIN_TF_DOCS -->
 ## Requirements
@@ -24,15 +25,13 @@ No modules.
 | Name | Type |
 |------|------|
 | [google_cloud_run_service_iam_member.public_access](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/cloud_run_service_iam_member) | resource |
-| [google_cloud_run_v2_service.auditor](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/cloud_run_v2_service) | resource |
+| [google_cloud_run_v2_service.main](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/cloud_run_v2_service) | resource |
 | [google_logging_organization_sink.audit-logs](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/logging_organization_sink) | resource |
 | [google_project_service.cloudrun](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/project_service) | resource |
-| [google_pubsub_subscription.gcp-auditor](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/pubsub_subscription) | resource |
-| [google_pubsub_subscription.gcp-auditor-test](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/pubsub_subscription) | resource |
+| [google_pubsub_subscription.logwarden](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/pubsub_subscription) | resource |
+| [google_pubsub_subscription.logwarden-test](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/pubsub_subscription) | resource |
 | [google_pubsub_topic.audit-logs](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/pubsub_topic) | resource |
 | [google_pubsub_topic_iam_policy.sink_topic_iam_poicy](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/pubsub_topic_iam_policy) | resource |
-| [google_secret_manager_secret.secrets](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/secret_manager_secret) | resource |
-| [google_secret_manager_secret_version.secrets_version](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/secret_manager_secret_version) | resource |
 | [google_storage_bucket.rego_policies](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/storage_bucket) | resource |
 | [google_iam_policy.sink_topic_iam_policy_data](https://registry.terraform.io/providers/hashicorp/google/latest/docs/data-sources/iam_policy) | data source |
 
@@ -47,7 +46,6 @@ No modules.
 | <a name="input_organization_id"></a> [organization\_id](#input\_organization\_id) | ID of the parent organization. | `string` | n/a | yes |
 | <a name="input_project_id"></a> [project\_id](#input\_project\_id) | ID of the parent project. Needed for service account IAM bindings. | `string` | n/a | yes |
 | <a name="input_region"></a> [region](#input\_region) | Region to place the CloudRun function in. | `string` | n/a | yes |
-| <a name="input_secrets"></a> [secrets](#input\_secrets) | Secrets to be stored in Secret Manager | `map(string)` | n/a | yes |
 
 ## Outputs
 

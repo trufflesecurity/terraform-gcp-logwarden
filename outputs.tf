@@ -1,6 +1,6 @@
 output "cloud_run_url" {
   #TODO interpolate full url string
-  value       = google_cloud_run_v2_service.auditor.uri
+  value       = google_cloud_run_v2_service.main.uri
   description = "URL of the deployed Cloud Run service"
 }
 
