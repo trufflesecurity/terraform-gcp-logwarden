@@ -19,7 +19,8 @@ resource "google_cloud_run_v2_service" "main" {
     containers {
       image = var.docker_image
       args = [
-        "--subscription ${google_pubsub_subscription.logwarden.name}",
+        "--subscription=${google_pubsub_subscription.logwarden.name}",
+        "--project=${var.project_id}",
       ]
     }
   }
