@@ -36,3 +36,8 @@ variable "docker_image" {
   type        = string
   description = "Docker image for the auditor tool. Used by Cloud Run"
 }
+
+variable "env_secrets" {
+  type        = string
+  description = "GCP Secret Manager secret name for environment variables."
+}

@@ -21,6 +21,7 @@ resource "google_cloud_run_v2_service" "main" {
       args = [
         "--subscription=${google_pubsub_subscription.logwarden.name}",
         "--project=${var.project_id}",
+        "--secret-name=${var.env_secrets}",
       ]
     }
   }

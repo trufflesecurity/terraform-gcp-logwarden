@@ -21,3 +21,7 @@ variable "docker_image" {
 variable "ingress" {
   type = string
 }
+
+variable "env_secrets" {
+  type = string
+}
