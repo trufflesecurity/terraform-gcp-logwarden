@@ -33,8 +33,8 @@ resource "google_service_account" "main" {
 }
 
 data "google_secret_manager_secret" "env" {
-  project = var.project_id
-  secret  = var.env_secret_id
+  project   = var.project_id
+  secret_id = var.env_secret_id
 }
 
 resource "google_secret_manager_secret_iam_member" "secret" {
