@@ -7,7 +7,7 @@ resource "google_project_service" "cloudrun" {
 
 #TODO min/max instances 1
 resource "google_cloud_run_v2_service" "main" {
-  name     = "truffle-logwarden-${var.region}-${var.environment}"
+  name     = "logwarden-${var.region}-${var.environment}"
   location = var.region
   ingress  = var.ingress
 
@@ -31,7 +31,7 @@ resource "google_cloud_run_v2_service" "main" {
 }
 
 resource "google_service_account" "main" {
-  account_id = "truffle-logwarden-${var.region}-${var.environment}"
+  account_id = "logwarden-${var.region}-${var.environment}"
   project    = var.project_id
 }
 
@@ -48,7 +48,7 @@ resource "google_project_iam_member" "secret" {
 }
 
 resource "google_storage_bucket" "rego_policies" {
-  name     = "truffle-logwarden-policies-${var.region}-${var.environment}"
+  name     = "logwarden-policies-${var.region}-${var.environment}"
   location = "US"
 
   public_access_prevention    = "enforced"
@@ -56,7 +56,7 @@ resource "google_storage_bucket" "rego_policies" {
 }
 
 resource "google_logging_organization_sink" "audit-logs" {
-  name        = "truffle-logwarden-audit-logs-${var.region}-${var.environment}"
+  name        = "logwarden-audit-logs-${var.region}-${var.environment}"
   description = "audit logs for the organization"
   org_id      = var.organization_id
 
@@ -81,12 +81,12 @@ resource "google_pubsub_topic_iam_policy" "sink_topic_iam_poicy" {
 }
 
 resource "google_pubsub_topic" "audit-logs" {
-  name    = "truffle-logwarden-audit-logs-${var.region}-${var.environment}"
+  name    = "logwarden-audit-logs-${var.region}-${var.environment}"
   project = var.project_id
 }
 
 resource "google_pubsub_subscription" "logwarden" {
-  name    = "truffle-logwarden-audit-logs-sub-${var.region}-${var.environment}"
+  name    = "logwarden-audit-logs-sub-${var.region}-${var.environment}"
   topic   = google_pubsub_topic.audit-logs.name
   project = var.project_id
 
@@ -106,7 +106,7 @@ resource "google_pubsub_subscription" "logwarden" {
 }
 
 resource "google_pubsub_subscription" "logwarden-test" {
-  name    = "truffle-logwarden-audit-logs-sub-test-${var.region}-${var.environment}"
+  name    = "logwarden-audit-logs-sub-test-${var.region}-${var.environment}"
   topic   = google_pubsub_topic.audit-logs.name
   project = var.project_id
 
