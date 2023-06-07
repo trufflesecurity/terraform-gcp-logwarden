@@ -12,6 +12,7 @@ resource "google_cloud_run_v2_service" "main" {
   ingress  = var.ingress
 
   template {
+    service_account = google_service_account.main.email
     scaling {
       max_instance_count = 1
       min_instance_count = 1
@@ -29,20 +30,21 @@ resource "google_cloud_run_v2_service" "main" {
   depends_on = [google_project_service.cloudrun]
 }
 
-resource "google_cloud_run_v2_service_iam_member" "public_access" {
-  name       = google_cloud_run_v2_service.main.name
-  location   = google_cloud_run_v2_service.main.location
-  role       = "roles/run.invoker"
-  member     = "allUsers"
-  depends_on = [google_project_service.cloudrun]
+resource "google_service_account" "main" {
+  account_id = "truffle-logwarden-${var.region}-${var.environment}"
+  project    = var.project_id
 }
 
-resource "google_cloud_run_v2_service_iam_member" "secret" {
-  name       = google_cloud_run_v2_service.main.name
-  location   = google_cloud_run_v2_service.main.location
-  role       = "roles/secretmanager.secretAccessor"
-  member     = "allUsers"
-  depends_on = [google_project_service.cloudrun]
+resource "google_project_iam_member" "run" {
+  project = var.project_id
+  member  = google_service_account.main.email
+  role    = "roles/run.invoker"
+}
+
+resource "google_project_iam_member" "secret" {
+  project = var.project_id
+  member  = google_service_account.main.email
+  role    = "roles/secretmanager.secretAccessor"
 }
 
 resource "google_storage_bucket" "rego_policies" {
