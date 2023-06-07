@@ -30,7 +30,7 @@ resource "google_cloud_run_v2_service" "main" {
 }
 
 resource "google_cloud_run_v2_service_iam_member" "public_access" {
-  service    = google_cloud_run_v2_service.main.name
+  name       = google_cloud_run_v2_service.main.name
   location   = google_cloud_run_v2_service.main.location
   role       = "roles/run.invoker"
   member     = "allUsers"
@@ -38,7 +38,7 @@ resource "google_cloud_run_v2_service_iam_member" "public_access" {
 }
 
 resource "google_cloud_run_v2_service_iam_member" "secret" {
-  service    = google_cloud_run_v2_service.main.name
+  name       = google_cloud_run_v2_service.main.name
   location   = google_cloud_run_v2_service.main.location
   role       = "roles/secretmanager.secretAccessor"
   member     = "allUsers"
