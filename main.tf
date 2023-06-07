@@ -1,6 +1,3 @@
-locals {
-}
-
 resource "google_project_service" "cloudrun" {
   service = "run.googleapis.com"
 }
@@ -22,7 +19,7 @@ resource "google_cloud_run_v2_service" "main" {
       args = [
         "--subscription=${google_pubsub_subscription.logwarden.name}",
         "--project=${var.project_id}",
-        "--secret-name=${var.env_secrets}",
+        "--secret-name=${data.google_secret_manager_secret.secret_id}",
       ]
     }
   }
@@ -35,16 +32,16 @@ resource "google_service_account" "main" {
   project    = var.project_id
 }
 
-resource "google_project_iam_member" "run" {
+data "google_secret_manager_secret" "env" {
   project = var.project_id
-  member  = google_service_account.main.email
-  role    = "roles/run.invoker"
+  secret  = var.env_secret_id
 }
 
-resource "google_project_iam_member" "secret" {
-  project = var.project_id
-  member  = google_service_account.main.email
-  role    = "roles/secretmanager.secretAccessor"
+resource "google_secret_manager_secret_iam_member" "secret" {
+  project   = var.project_id
+  member    = google_service_account.main.email
+  secret_id = var.env_secret_id
+  role      = "roles/secretmanager.secretAccessor"
 }
 
 resource "google_storage_bucket" "rego_policies" {

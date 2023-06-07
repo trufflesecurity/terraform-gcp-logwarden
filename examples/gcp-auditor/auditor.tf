@@ -8,5 +8,5 @@ module "auditor" {
   ingress             = var.ingress
   region              = var.region
   docker_image        = var.docker_image
-  env_secrets         = var.env_secrets
+  env_secret_id       = var.env_secret_id
 }

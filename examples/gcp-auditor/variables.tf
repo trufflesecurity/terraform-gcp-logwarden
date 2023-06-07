@@ -22,6 +22,6 @@ variable "ingress" {
   type = string
 }
 
-variable "env_secrets" {
+variable "env_secret_id" {
   type = string
 }
