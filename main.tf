@@ -29,10 +29,18 @@ resource "google_cloud_run_v2_service" "main" {
   depends_on = [google_project_service.cloudrun]
 }
 
-resource "google_cloud_run_service_iam_member" "public_access" {
+resource "google_cloud_run_v2_service_iam_member" "public_access" {
   service    = google_cloud_run_v2_service.main.name
   location   = google_cloud_run_v2_service.main.location
   role       = "roles/run.invoker"
+  member     = "allUsers"
+  depends_on = [google_project_service.cloudrun]
+}
+
+resource "google_cloud_run_v2_service_iam_member" "secret" {
+  service    = google_cloud_run_v2_service.main.name
+  location   = google_cloud_run_v2_service.main.location
+  role       = "roles/secretmanager.secretAccessor"
   member     = "allUsers"
   depends_on = [google_project_service.cloudrun]
 }
