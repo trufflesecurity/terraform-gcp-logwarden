@@ -19,7 +19,7 @@ resource "google_cloud_run_v2_service" "main" {
       args = [
         "--subscription=${google_pubsub_subscription.logwarden.name}",
         "--project=${var.project_id}",
-        "--secret-name=${data.google_secret_manager_secret.secret_id}",
+        "--secret-name=${data.google_secret_manager_secret.env.secret_id}",
       ]
     }
   }
