@@ -1,3 +1,7 @@
+locals {
+  secret_name = trimprefix(data.google_secret_manager_secret.env.id, "projects/${data.google_secret_manager_secret.env.project}/secrets/")
+}
+
 resource "google_project_service" "cloudrun" {
   service = "run.googleapis.com"
 }
@@ -19,7 +23,7 @@ resource "google_cloud_run_v2_service" "main" {
       args = [
         "--subscription=${google_pubsub_subscription.logwarden.name}",
         "--project=${var.project_id}",
-        "--secret-name=${data.google_secret_manager_secret.env.secret_id}",
+        "--secret-name=${local.secret_name}",
       ]
     }
   }
