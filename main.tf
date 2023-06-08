@@ -26,7 +26,8 @@ resource "google_cloud_run_v2_service" "main" {
 
   depends_on = [
     google_project_service.cloudrun,
-    google_service_account.main
+    google_service_account.main,
+    google_pubsub_subscription.logwarden
   ]
 }
 
@@ -99,12 +100,12 @@ resource "google_pubsub_topic_iam_policy" "sink_topic" {
 }
 
 resource "google_pubsub_topic" "audit_logs" {
-  name    = "logwarden-audit_logs-${var.region}-${var.environment}"
+  name    = "logwarden-audit-logs-${var.region}-${var.environment}"
   project = var.project_id
 }
 
 resource "google_pubsub_subscription" "logwarden" {
-  name    = "logwarden-audit_logs-sub-${var.region}-${var.environment}"
+  name    = "logwarden-audit-logs-sub-${var.region}-${var.environment}"
   topic   = google_pubsub_topic.audit_logs.name
   project = var.project_id
 
