@@ -122,6 +122,7 @@ resource "google_pubsub_subscription" "logwarden" {
   }
 
   enable_message_ordering = false
+  depends_on              = [google_pubsub_topic.audit_logs]
 }
 
 resource "google_pubsub_subscription" "logwarden-test" {
