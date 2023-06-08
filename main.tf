@@ -94,7 +94,7 @@ data "google_iam_policy" "sink_topic" {
 
 resource "google_pubsub_topic_iam_policy" "sink_topic" {
   project     = var.project_id
-  policy_data = data.google_iam_policy.sink_topic_iam_policy_data.policy_data
+  policy_data = data.google_iam_policy.sink_topic.policy_data
   topic       = google_pubsub_topic.audit_logs.name
 }
 
