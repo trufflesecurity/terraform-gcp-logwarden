@@ -69,11 +69,11 @@ resource "google_storage_bucket" "rego_policies" {
 }
 
 resource "google_logging_organization_sink" "audit_logs" {
-  name        = "logwarden-audit_logs-${var.region}-${var.environment}"
+  name        = "logwarden-audit-logs-${var.region}-${var.environment}"
   description = "audit logs for the organization"
   org_id      = var.organization_id
 
-  destination = "pubsub.googleapis.com/${google_pubsub_topic.audit_logs.id}"
+  destination = "pubsub.googleapis.com/${google_pubsub_topic.audit-logs.id}"
 
   include_children = true
 
@@ -125,7 +125,7 @@ resource "google_pubsub_subscription" "logwarden" {
 }
 
 resource "google_pubsub_subscription" "logwarden-test" {
-  name    = "logwarden-audit_logs-sub-test-${var.region}-${var.environment}"
+  name    = "logwarden-audit-logs-sub-test-${var.region}-${var.environment}"
   topic   = google_pubsub_topic.audit_logs.name
   project = var.project_id
 
