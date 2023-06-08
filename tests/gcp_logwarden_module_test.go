@@ -35,7 +35,7 @@ func TestLogwardenModule(t *testing.T) {
 
 		// randomize with a unique seed for each test run to avoid name collisions
 		rand.Seed(time.Now().UnixNano())
-		uniqueId := fmt.Sprintf("test-%d", rand.Intn(9999))
+		uniqueId := fmt.Sprintf("%d", rand.Intn(9999))
 
 		test_structure.SaveString(t, terraformDir, "savedGcpRegion", gcpRegion)
 		test_structure.SaveString(t, terraformDir, "savedUniqueId", uniqueId)
