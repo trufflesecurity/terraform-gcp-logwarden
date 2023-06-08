@@ -68,11 +68,11 @@ resource "google_storage_bucket" "rego_policies" {
 }
 
 resource "google_logging_organization_sink" "audit_logs" {
-  name        = "logwarden-audit-logs-${var.region}-${var.environment}"
+  name        = "logwarden-audit_logs-${var.region}-${var.environment}"
   description = "audit logs for the organization"
   org_id      = var.organization_id
 
-  destination = "pubsub.googleapis.com/${google_pubsub_topic.audit-logs.id}"
+  destination = "pubsub.googleapis.com/${google_pubsub_topic.audit_logs.id}"
 
   include_children = true
 
@@ -87,7 +87,7 @@ resource "google_project_iam_member" "pubsub" {
 
 data "google_iam_policy" "sink_topic" {
   binding {
-    members = [google_logging_organization_sink.audit-logs.writer_identity]
+    members = [google_logging_organization_sink.audit_logs.writer_identity]
     role    = "roles/pubsub.publisher"
   }
 }
@@ -95,17 +95,17 @@ data "google_iam_policy" "sink_topic" {
 resource "google_pubsub_topic_iam_policy" "sink_topic" {
   project     = var.project_id
   policy_data = data.google_iam_policy.sink_topic_iam_policy_data.policy_data
-  topic       = google_pubsub_topic.audit-logs.name
+  topic       = google_pubsub_topic.audit_logs.name
 }
 
 resource "google_pubsub_topic" "audit_logs" {
-  name    = "logwarden-audit-logs-${var.region}-${var.environment}"
+  name    = "logwarden-audit_logs-${var.region}-${var.environment}"
   project = var.project_id
 }
 
 resource "google_pubsub_subscription" "logwarden" {
-  name    = "logwarden-audit-logs-sub-${var.region}-${var.environment}"
-  topic   = google_pubsub_topic.audit-logs.name
+  name    = "logwarden-audit_logs-sub-${var.region}-${var.environment}"
+  topic   = google_pubsub_topic.audit_logs.name
   project = var.project_id
 
   message_retention_duration = "3600s"
@@ -124,8 +124,8 @@ resource "google_pubsub_subscription" "logwarden" {
 }
 
 resource "google_pubsub_subscription" "logwarden-test" {
-  name    = "logwarden-audit-logs-sub-test-${var.region}-${var.environment}"
-  topic   = google_pubsub_topic.audit-logs.name
+  name    = "logwarden-audit_logs-sub-test-${var.region}-${var.environment}"
+  topic   = google_pubsub_topic.audit_logs.name
   project = var.project_id
 
   message_retention_duration = "3600s"
