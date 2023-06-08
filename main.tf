@@ -24,7 +24,10 @@ resource "google_cloud_run_v2_service" "main" {
     }
   }
 
-  depends_on = [google_project_service.cloudrun]
+  depends_on = [
+    google_project_service.cloudrun,
+    google_service_account.main
+  ]
 }
 
 resource "google_service_account" "main" {
@@ -37,9 +40,9 @@ data "google_secret_manager_secret" "env" {
   secret_id = var.env_secret_id
 }
 
-resource "google_secret_manager_secret_iam_member" "secret" {
+resource "google_secret_manager_secret_iam_member" "env" {
   project   = var.project_id
-  member    = google_service_account.main.email
+  member    = google_service_account.main.member
   secret_id = data.google_secret_manager_secret.env.id
   role      = "roles/secretmanager.secretAccessor"
 }
