@@ -9,7 +9,7 @@ resource "google_cloud_run_v2_service" "main" {
   ingress  = var.ingress
 
   template {
-    service_account = google_service_account.main.member
+    service_account = google_service_account.main.email
     scaling {
       max_instance_count = 1
       min_instance_count = 1
@@ -38,18 +38,6 @@ resource "google_service_account" "main" {
 data "google_secret_manager_secret" "env" {
   project   = var.project_id
   secret_id = var.env_secret_id
-}
-
-resource "google_project_iam_member" "run" {
-  project = var.project_id
-  member  = google_service_account.main.member
-  role    = "roles/run.admin"
-}
-
-resource "google_project_iam_member" "service" {
-  project = var.project_id
-  member  = google_service_account.main.member
-  role    = "roles/iam.serviceAccountUser"
 }
 
 resource "google_secret_manager_secret_iam_member" "env" {
