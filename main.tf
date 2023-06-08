@@ -9,7 +9,7 @@ resource "google_cloud_run_v2_service" "main" {
   ingress  = var.ingress
 
   template {
-    service_account = google_service_account.main.email
+    service_account = google_service_account.main.member
     scaling {
       max_instance_count = 1
       min_instance_count = 1
