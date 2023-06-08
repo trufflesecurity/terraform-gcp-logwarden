@@ -80,10 +80,11 @@ resource "google_logging_organization_sink" "audit_logs" {
   filter = var.logging_sink_filter
 }
 
-resource "google_project_iam_member" "pubsub" {
-  project = var.project_id
-  role    = "roles/pubsub.subscriber"
-  member  = google_service_account.main.member
+resource "google_pubsub_subscription_iam_member" "pubsub" {
+  project      = var.project_id
+  subscription = google_pubsub_subscription.logwarden.id
+  role         = "roles/pubsub.subscriber"
+  member       = google_service_account.main.member
 }
 
 data "google_iam_policy" "sink_topic" {
