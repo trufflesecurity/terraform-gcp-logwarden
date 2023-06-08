@@ -40,6 +40,18 @@ data "google_secret_manager_secret" "env" {
   secret_id = var.env_secret_id
 }
 
+resource "google_project_iam_member" "run" {
+  project = var.project_id
+  member  = google_service_account.main.member
+  role    = "roles/run.admin"
+}
+
+resource "google_project_iam_member" "service" {
+  project = var.project_id
+  member  = google_service_account.main.member
+  role    = "roles/iam.serviceAccountUser"
+}
+
 resource "google_secret_manager_secret_iam_member" "env" {
   project   = var.project_id
   member    = google_service_account.main.member
