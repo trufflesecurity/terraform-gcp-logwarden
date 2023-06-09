@@ -31,7 +31,6 @@ resource "google_cloud_run_v2_service" "main" {
   ]
 }
 
-# add time_sleep
 resource "time_sleep" "main" {
   depends_on = [
     google_pubsub_subscription.logwarden
@@ -115,7 +114,7 @@ resource "google_pubsub_topic" "audit_logs" {
 
 resource "google_pubsub_subscription" "logwarden" {
   name    = "logwarden-audit-logs-sub-${var.region}-${var.environment}"
-  topic   = google_pubsub_topic.audit_logs.name
+  topic   = google_pubsub_topic.audit_logs.id
   project = var.project_id
 
   message_retention_duration = "3600s"
