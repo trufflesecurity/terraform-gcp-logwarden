@@ -17,7 +17,7 @@ resource "google_cloud_run_v2_service" "main" {
     containers {
       image = var.docker_image
       args = [
-        "--subscription=logwarden-audit-logs-sub-${var.region}-${var.environment}",
+        "--subscription=${google_pubsub_subscription.logwarden.name}",
         "--project=${var.project_id}",
         "--secret-name=${var.env_secret_id}",
       ]
@@ -29,6 +29,14 @@ resource "google_cloud_run_v2_service" "main" {
     google_service_account.main,
     google_pubsub_subscription.logwarden
   ]
+}
+
+# add time_sleep
+resource "time_sleep" "main" {
+  depends_on = [
+    google_pubsub_subscription.logwarden
+  ]
+  create_duration = "30s"
 }
 
 resource "google_service_account" "main" {
