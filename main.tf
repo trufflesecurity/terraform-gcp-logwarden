@@ -21,6 +21,9 @@ resource "google_cloud_run_v2_service" "main" {
         "--project=${var.project_id}",
         "--secret-name=${var.env_secret_id}",
       ]
+      tcp_socket {
+        port = 8080
+      }
     }
   }
 
