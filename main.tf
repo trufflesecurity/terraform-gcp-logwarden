@@ -53,6 +53,12 @@ resource "time_sleep" "main" {
   create_duration = "30s"
 }
 
+resource "google_cloud_run_v2_service_iam_member" "main" {
+  project = var.project_id
+  member  = google_service_account.main.member
+  role    = "roles/run.invoker"
+}
+
 resource "google_service_account" "main" {
   account_id = "logwarden-${var.region}-${var.environment}"
   project    = var.project_id
@@ -61,12 +67,6 @@ resource "google_service_account" "main" {
 data "google_secret_manager_secret" "env" {
   project   = var.project_id
   secret_id = var.env_secret_id
-}
-
-resource "google_project_iam_member" "run" {
-  project = var.project_id
-  member  = google_service_account.main.member
-  role    = "roles/run.admin"
 }
 
 resource "google_project_iam_member" "service" {
@@ -102,14 +102,7 @@ resource "google_logging_organization_sink" "audit_logs" {
   filter = var.logging_sink_filter
 }
 
-resource "google_pubsub_subscription_iam_member" "pubsub_view" {
-  project      = var.project_id
-  subscription = google_pubsub_subscription.logwarden.id
-  role         = "roles/pubsub.viewer"
-  member       = google_service_account.main.member
-}
-
-resource "google_pubsub_subscription_iam_member" "pubsub_subscribe" {
+resource "google_pubsub_subscription_iam_member" "pubsub" {
   project      = var.project_id
   subscription = google_pubsub_subscription.logwarden.id
   role         = "roles/pubsub.subscriber"
