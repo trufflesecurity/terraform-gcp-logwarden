@@ -102,10 +102,17 @@ resource "google_logging_organization_sink" "audit_logs" {
   filter = var.logging_sink_filter
 }
 
-resource "google_pubsub_subscription_iam_member" "pubsub" {
+resource "google_pubsub_subscription_iam_member" "pubsub_view" {
   project      = var.project_id
   subscription = google_pubsub_subscription.logwarden.id
   role         = "roles/pubsub.viewer"
+  member       = google_service_account.main.member
+}
+
+resource "google_pubsub_subscription_iam_member" "pubsub_subscribe" {
+  project      = var.project_id
+  subscription = google_pubsub_subscription.logwarden.id
+  role         = "roles/pubsub.subscriber"
   member       = google_service_account.main.member
 }
 
