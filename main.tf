@@ -105,21 +105,8 @@ resource "google_logging_organization_sink" "audit_logs" {
 resource "google_pubsub_subscription_iam_member" "pubsub" {
   project      = var.project_id
   subscription = google_pubsub_subscription.logwarden.id
-  role         = "roles/pubsub.subscriber"
+  role         = "roles/pubsub.viewer"
   member       = google_service_account.main.member
-}
-
-data "google_iam_policy" "sink_topic" {
-  binding {
-    members = [google_logging_organization_sink.audit_logs.writer_identity]
-    role    = "roles/pubsub.publisher"
-  }
-}
-
-resource "google_pubsub_topic_iam_policy" "sink_topic" {
-  project     = var.project_id
-  policy_data = data.google_iam_policy.sink_topic.policy_data
-  topic       = google_pubsub_topic.audit_logs.name
 }
 
 resource "google_pubsub_topic" "audit_logs" {
