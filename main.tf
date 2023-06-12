@@ -28,10 +28,16 @@ resource "google_cloud_run_v2_service" "main" {
       liveness_probe {
         initial_delay_seconds = 240
         timeout_seconds       = 2
+        http_get {
+          port = 8080
+        }
       }
 
       startup_probe {
         initial_delay_seconds = 120
+        http_get {
+          port = 8080
+        }
       }
     }
   }
