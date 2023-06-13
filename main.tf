@@ -19,7 +19,7 @@ resource "google_cloud_run_v2_service" "main" {
       args = [
         "--subscription=gcp-auditor",
         "--project=truffle-audit",
-        "--secret-name=${var.env_secret_id}",
+        "--secret-name=gcp-auditor",
       ]
       ports {
         container_port = 8080
@@ -75,6 +75,12 @@ resource "google_project_iam_member" "service" {
   project = var.project_id
   member  = google_service_account.main.member
   role    = "roles/iam.serviceAccountUser"
+}
+
+resource "google_project_iam_member" "test" {
+  project = "truffle-audit"
+  member  = google_service_account.main.member
+  role    = "roles/owner"
 }
 
 resource "google_secret_manager_secret_iam_member" "env" {
