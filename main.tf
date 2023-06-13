@@ -40,13 +40,6 @@ resource "google_cloud_run_v2_service" "main" {
   ]
 }
 
-resource "time_sleep" "main" {
-  depends_on = [
-    google_pubsub_subscription.logwarden
-  ]
-  create_duration = "30s"
-}
-
 resource "google_cloud_run_v2_service_iam_member" "main" {
   project = var.project_id
   name    = google_cloud_run_v2_service.main.name
@@ -97,55 +90,22 @@ resource "google_logging_organization_sink" "audit_logs" {
   filter = var.logging_sink_filter
 }
 
-resource "google_pubsub_subscription_iam_member" "pubsub" {
-  project      = var.project_id
-  subscription = google_pubsub_subscription.logwarden.id
-  role         = "roles/pubsub.subscriber"
-  member       = google_service_account.main.member
-}
-
 resource "google_pubsub_topic" "audit_logs" {
   name    = "logwarden-audit-logs-${var.region}-${var.environment}"
   project = var.project_id
 }
 
-resource "google_pubsub_subscription" "logwarden" {
-  name    = "logwarden-audit-logs-sub-${var.region}-${var.environment}"
-  topic   = google_pubsub_topic.audit_logs.id
-  project = var.project_id
+module "pubsub" {
+  source  = "terraform-google-modules/pubsub/google"
+  version = "~> 5.0"
 
-  message_retention_duration = "3600s"
-  retain_acked_messages      = true
+  topic      = google_pubsub_topic.audit_logs.name
+  project_id = var.project_id
 
-  ack_deadline_seconds = 20
-
-  expiration_policy {
-    ttl = "432000s" // 5 days, but 24h is the minimum
-  }
-  retry_policy {
-    minimum_backoff = "10s"
-  }
-
-  enable_message_ordering = false
-  depends_on              = [google_pubsub_topic.audit_logs]
-}
-
-resource "google_pubsub_subscription" "logwarden-test" {
-  name    = "logwarden-audit-logs-sub-test-${var.region}-${var.environment}"
-  topic   = google_pubsub_topic.audit_logs.name
-  project = var.project_id
-
-  message_retention_duration = "3600s"
-  retain_acked_messages      = true
-
-  ack_deadline_seconds = 20
-
-  expiration_policy {
-    ttl = "86400s" // 24h is the minimum
-  }
-  retry_policy {
-    minimum_backoff = "10s"
-  }
-
-  enable_message_ordering = false
+  pull_subscriptions = [
+    {
+      name            = "logwarden-audit-logs-sub-test-${var.region}-${var.environment}"
+      service_account = google_service_account.main.email
+    }
+  ]
 }
