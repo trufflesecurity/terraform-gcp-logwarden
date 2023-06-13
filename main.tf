@@ -59,7 +59,7 @@ resource "google_service_account" "main" {
   project    = var.project_id
 }
 
-resource "google_pubsub_subscription_iam_member" "pubsub" {
+resource "google_pubsub_subscription_iam_member" "test" {
   project      = "truffle-audit"
   subscription = "projects/truffle-audit/subscriptions/gcp-auditor"
   role         = "roles/pubsub.subscriber"
