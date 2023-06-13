@@ -77,7 +77,7 @@ resource "google_project_iam_member" "service" {
   role    = "roles/iam.serviceAccountUser"
 }
 
-resource "google_project_iam_member" "iam'" {
+resource "google_project_iam_member" "iam" {
   project = var.project_id
   member  = google_service_account.main.member
   role    = "roles/iam.securityReviewer"
