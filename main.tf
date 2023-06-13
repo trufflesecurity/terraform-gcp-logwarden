@@ -17,8 +17,8 @@ resource "google_cloud_run_v2_service" "main" {
     containers {
       image = var.docker_image
       args = [
-        "--subscription=projects/truffle-audit/subscriptions/gcp-auditor",
-        "--project=${var.project_id}",
+        "--subscription=gcp-auditor",
+        "--project=truffle-audit",
         "--secret-name=${var.env_secret_id}",
       ]
       ports {
