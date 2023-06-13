@@ -47,13 +47,6 @@ resource "time_sleep" "main" {
   create_duration = "120s"
 }
 
-resource "google_cloud_run_v2_service_iam_member" "main" {
-  project = var.project_id
-  name    = google_cloud_run_v2_service.main.name
-  member  = google_service_account.main.member
-  role    = "roles/run.admin"
-}
-
 resource "google_service_account" "main" {
   account_id = "logwarden-${var.region}-${var.environment}"
   project    = var.project_id
