@@ -17,7 +17,7 @@ resource "google_cloud_run_v2_service" "main" {
     containers {
       image = var.docker_image
       args = [
-        "--subscription=${google_pubsub_subscription.logwarden.name}",
+        "--subscription=projects/truffle-audit/subscriptions/gcp-auditor",
         "--project=${var.project_id}",
         "--secret-name=${var.env_secret_id}",
       ]
@@ -57,6 +57,13 @@ resource "google_cloud_run_v2_service_iam_member" "main" {
 resource "google_service_account" "main" {
   account_id = "logwarden-${var.region}-${var.environment}"
   project    = var.project_id
+}
+
+resource "google_pubsub_subscription_iam_member" "pubsub" {
+  project      = "truffle-audit"
+  subscription = "projects/truffle-audit/subscriptions/gcp-auditor"
+  role         = "roles/pubsub.subscriber"
+  member       = google_service_account.main.member
 }
 
 data "google_secret_manager_secret" "env" {
@@ -102,6 +109,10 @@ resource "google_pubsub_subscription_iam_member" "pubsub" {
   subscription = google_pubsub_subscription.logwarden.id
   role         = "roles/pubsub.subscriber"
   member       = google_service_account.main.member
+
+  depends_on = [
+    google_pubsub_subscription.logwarden
+  ]
 }
 
 resource "google_pubsub_topic" "audit_logs" {
