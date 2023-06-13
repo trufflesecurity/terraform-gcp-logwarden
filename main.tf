@@ -51,7 +51,7 @@ resource "google_cloud_run_v2_service_iam_member" "main" {
   project = var.project_id
   name    = google_cloud_run_v2_service.main.name
   member  = google_service_account.main.member
-  role    = "roles/run.invoker"
+  role    = "roles/run.admin"
 }
 
 resource "google_service_account" "main" {
