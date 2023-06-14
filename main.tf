@@ -73,6 +73,7 @@ resource "google_storage_bucket" "rego_policies" {
   name     = "logwarden-policies-${var.region}-${var.environment}"
   location = "US"
 
+  force_destroy               = "true"
   public_access_prevention    = "enforced"
   uniform_bucket_level_access = "true"
 }
