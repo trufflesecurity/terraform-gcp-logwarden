@@ -45,13 +45,6 @@ resource "google_service_account" "main" {
   project    = var.project_id
 }
 
-resource "google_pubsub_subscription_iam_member" "test" {
-  project      = "truffle-audit"
-  subscription = "projects/truffle-audit/subscriptions/gcp-auditor"
-  role         = "roles/pubsub.subscriber"
-  member       = google_service_account.main.member
-}
-
 data "google_secret_manager_secret" "env" {
   project   = var.project_id
   secret_id = var.env_secret_id
@@ -63,17 +56,11 @@ resource "google_project_iam_member" "service" {
   role    = "roles/iam.serviceAccountUser"
 }
 
-resource "google_project_iam_member" "iam" {
-  project = var.project_id
-  member  = google_service_account.main.member
-  role    = "roles/iam.securityReviewer"
-}
-
-resource "google_project_iam_member" "test" {
-  project = "truffle-audit"
-  member  = google_service_account.main.member
-  role    = "roles/owner"
-}
+# resource "google_project_iam_member" "iam" {
+#   project = var.project_id
+#   member  = google_service_account.main.member
+#   role    = "roles/iam.securityReviewer"
+# }
 
 resource "google_secret_manager_secret_iam_member" "env" {
   project   = var.project_id
