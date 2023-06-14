@@ -92,7 +92,7 @@ func TestLogwardenModule(t *testing.T) {
 		bucketName := terraform.Output(t, terraformOptions, "policy_bucket_name")
 
 		// Path to a rego policy
-		filePath := "../../tests/policy/gcp/mitre_privilege_escalation.rego"
+		filePath := "../tests/policy/gcp/mitre_privilege_escalation.rego"
 
 		// Create a client
 		client, err := storage.NewClient(ctx)
