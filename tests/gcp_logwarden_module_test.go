@@ -1,11 +1,16 @@
 package test
 
 import (
+	"context"
 	"fmt"
+	"io"
+	"log"
 	"math/rand"
+	"os"
 	"testing"
 	"time"
 
+	"cloud.google.com/go/storage"
 	"github.com/gruntwork-io/terratest/modules/gcp"
 	"github.com/gruntwork-io/terratest/modules/terraform"
 	test_structure "github.com/gruntwork-io/terratest/modules/test-structure"
@@ -75,5 +80,44 @@ func TestLogwardenModule(t *testing.T) {
 
 		terraform.InitAndApply(t, terraformOptions)
 
+	})
+
+	test_structure.RunTestStage(t, "upload_policy", func() {
+
+		ctx := context.Background()
+
+		terraformOptions := test_structure.LoadTerraformOptions(t, terraformDir)
+
+		// This has to be a defined output in the module
+		bucketName := terraform.Output(t, terraformOptions, "policy_bucket_name")
+
+		// Path to a rego policy
+		filePath := "../../tests/policy/gcp/mitre_privilege_escalation.rego"
+
+		// Create a client
+		client, err := storage.NewClient(ctx)
+		if err != nil {
+			log.Fatalf("Failed to create client: %v", err)
+		}
+
+		// Open the file
+		f, err := os.Open(filePath)
+		if err != nil {
+			log.Fatalf("Failed to open file: %v", err)
+		}
+		defer f.Close()
+
+		// Get a handle to the bucket and the object
+		bkt := client.Bucket(bucketName)
+		obj := bkt.Object("mitre_privilege_escalation.rego")
+
+		// Write the file to the bucket
+		wc := obj.NewWriter(ctx)
+		if _, err := io.Copy(wc, f); err != nil {
+			log.Fatalf("Failed to copy file: %v", err)
+		}
+		if err := wc.Close(); err != nil {
+			log.Fatalf("Failed to close: %v", err)
+		}
 	})
 }
