@@ -17,9 +17,9 @@ resource "google_cloud_run_v2_service" "main" {
     containers {
       image = var.docker_image
       args = [
-        "--subscription=gcp-auditor",
-        "--project=truffle-audit",
-        "--secret-name=gcp-auditor",
+        "--subscription=${google_pubsub_subscription.logwarden.name}",
+        "--project=${var.project_id}",
+        "--secret-name=${var.env_secret_id}"
       ]
       ports {
         container_port = 8080
@@ -38,13 +38,6 @@ resource "google_cloud_run_v2_service" "main" {
     google_service_account.main,
     google_pubsub_subscription.logwarden
   ]
-}
-
-resource "time_sleep" "main" {
-  depends_on = [
-    google_pubsub_subscription.logwarden
-  ]
-  create_duration = "120s"
 }
 
 resource "google_service_account" "main" {
