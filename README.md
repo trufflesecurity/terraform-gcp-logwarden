@@ -57,4 +57,5 @@ No modules.
 |------|-------------|
 | <a name="output_cloud_run_url"></a> [cloud\_run\_url](#output\_cloud\_run\_url) | URL of the deployed Cloud Run service |
 | <a name="output_policy_bucket_name"></a> [policy\_bucket\_name](#output\_policy\_bucket\_name) | Name of the GCS bucket where rego policies are uploaded. |
+| <a name="output_topic_name"></a> [topic\_name](#output\_topic\_name) | Name of the PubSub topic where log messages are consumed. |
 <!-- END_TF_DOCS -->

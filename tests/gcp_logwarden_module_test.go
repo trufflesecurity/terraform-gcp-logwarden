@@ -4,12 +4,14 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"log"
 	"math/rand"
 	"os"
 	"testing"
 	"time"
 
+	"cloud.google.com/go/pubsub"
 	"cloud.google.com/go/storage"
 	"github.com/gruntwork-io/terratest/modules/gcp"
 	"github.com/gruntwork-io/terratest/modules/terraform"
@@ -20,6 +22,7 @@ import (
 func TestLogwardenModule(t *testing.T) {
 	//Basic module tests
 
+	//Regions we're currently likely to deploy or DR in
 	approvedRegions := []string{
 		"us-central1",
 		"us-east1",
@@ -64,9 +67,11 @@ func TestLogwardenModule(t *testing.T) {
 		test_structure.SaveTerraformOptions(t, terraformDir, terraformOptions)
 	})
 
+	// This defers until all other test steps below either complete or fail
 	defer test_structure.RunTestStage(t, "teardown", func() {
 
 		terraformOptions := test_structure.LoadTerraformOptions(t, terraformDir)
+
 		terraform.Destroy(t, terraformOptions)
 	})
 
@@ -83,6 +88,8 @@ func TestLogwardenModule(t *testing.T) {
 	})
 
 	test_structure.RunTestStage(t, "upload_policy", func() {
+		// This test stage validates we can successfully push a rego
+		// policy to the GCS bucket
 
 		ctx := context.Background()
 
@@ -91,33 +98,66 @@ func TestLogwardenModule(t *testing.T) {
 		// This has to be a defined output in the module
 		bucketName := terraform.Output(t, terraformOptions, "policy_bucket_name")
 
-		// Path to a rego policy
 		filePath := "../tests/policy/gcp/mitre_privilege_escalation.rego"
 
-		// Create a client
 		client, err := storage.NewClient(ctx)
 		if err != nil {
 			log.Fatalf("Failed to create client: %v", err)
 		}
 
-		// Open the file
 		f, err := os.Open(filePath)
+
 		if err != nil {
 			log.Fatalf("Failed to open file: %v", err)
 		}
+
 		defer f.Close()
 
-		// Get a handle to the bucket and the object
 		bkt := client.Bucket(bucketName)
 		obj := bkt.Object("mitre_privilege_escalation.rego")
 
-		// Write the file to the bucket
 		wc := obj.NewWriter(ctx)
+
 		if _, err := io.Copy(wc, f); err != nil {
 			log.Fatalf("Failed to copy file: %v", err)
 		}
+
 		if err := wc.Close(); err != nil {
 			log.Fatalf("Failed to close: %v", err)
 		}
+	})
+
+	test_structure.RunTestStage(t, "push_event", func() {
+		// Pushes a dummy event: 'test_event.json' to the pubsub topic
+		// ideally logwarden should emit an event on its webhook
+
+		ctx := context.Background()
+
+		terraformOptions := test_structure.LoadTerraformOptions(t, terraformDir)
+
+		topicName := terraform.Output(t, terraformOptions, "topic_name")
+		projectId := terraformOptions.Vars["project_id"].(string)
+
+		client, err := pubsub.NewClient(ctx, projectId)
+
+		if err != nil {
+			log.Fatalf("Failed to create client: %v", err)
+		}
+
+		t := client.Topic(topicName)
+
+		eventMessage, _ := ioutil.ReadFile("../tests/test_event.json")
+
+		result := t.Publish(ctx, &pubsub.Message{
+			Data: []byte(eventMessage),
+		})
+
+		// The Publish method returns a server-assigned message ID.
+		id, err := result.Get(ctx)
+		if err != nil {
+			log.Fatalf("Failed to publish: %v", err)
+		}
+
+		log.Printf("Published message; msg ID: %v\n", id)
 	})
 }

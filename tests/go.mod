@@ -3,6 +3,8 @@ module test
 go 1.19
 
 require (
+	cloud.google.com/go/pubsub v1.3.1
+	cloud.google.com/go/storage v1.27.0
 	github.com/gruntwork-io/terratest v0.41.16
 	github.com/stretchr/testify v1.8.2
 )
@@ -14,7 +16,6 @@ require (
 	cloud.google.com/go/compute/metadata v0.2.1 // indirect
 	cloud.google.com/go/iam v0.7.0 // indirect
 	cloud.google.com/go/longrunning v0.3.0 // indirect
-	cloud.google.com/go/storage v1.27.0 // indirect
 	github.com/agext/levenshtein v1.2.3 // indirect
 	github.com/apparentlymart/go-textseg/v13 v13.0.0 // indirect
 	github.com/aws/aws-sdk-go v1.44.122 // indirect
