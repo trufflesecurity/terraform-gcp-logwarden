@@ -1,3 +1,12 @@
+locals {
+  default_args = [
+    "--subscription=${google_pubsub_subscription.logwarden.name}",
+    "--project=${var.project_id}",
+    "--secret-name=${var.env_secret_id}"
+  ]
+  run_args = concat(local.default_args, var.container_args)
+}
+
 resource "google_project_service" "cloudrun" {
   service = "run.googleapis.com"
 }
@@ -16,11 +25,7 @@ resource "google_cloud_run_v2_service" "main" {
     }
     containers {
       image = var.docker_image
-      args = [
-        "--subscription=${google_pubsub_subscription.logwarden.name}",
-        "--project=${var.project_id}",
-        "--secret-name=${var.env_secret_id}"
-      ]
+      args  = local.run_args
       ports {
         container_port = 8080
       }
@@ -55,12 +60,6 @@ resource "google_project_iam_member" "service" {
   member  = google_service_account.main.member
   role    = "roles/iam.serviceAccountUser"
 }
-
-# resource "google_project_iam_member" "iam" {
-#   project = var.project_id
-#   member  = google_service_account.main.member
-#   role    = "roles/iam.securityReviewer"
-# }
 
 resource "google_secret_manager_secret_iam_member" "env" {
   project   = var.project_id

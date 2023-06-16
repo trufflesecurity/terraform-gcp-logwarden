@@ -25,3 +25,7 @@ variable "ingress" {
 variable "env_secret_id" {
   type = string
 }
+
+variable "container_args" {
+  type = list(string)
+}

@@ -41,6 +41,7 @@ No modules.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
+| <a name="input_container_args"></a> [container\_args](#input\_container\_args) | Runtime arguments for logwarden | `list(string)` | `[]` | no |
 | <a name="input_docker_image"></a> [docker\_image](#input\_docker\_image) | Docker image for the auditor tool. Used by Cloud Run | `string` | n/a | yes |
 | <a name="input_env_secret_id"></a> [env\_secret\_id](#input\_env\_secret\_id) | GCP Secret Manager secret name/id for environment variable string. | `string` | n/a | yes |
 | <a name="input_environment"></a> [environment](#input\_environment) | Environment of app, service, or context using this module. | `string` | n/a | yes |

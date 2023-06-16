@@ -41,3 +41,9 @@ variable "env_secret_id" {
   type        = string
   description = "GCP Secret Manager secret name/id for environment variable string."
 }
+
+variable "container_args" {
+  description = "Runtime arguments for logwarden"
+  type        = list(string)
+  default     = []
+}
