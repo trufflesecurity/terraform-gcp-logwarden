@@ -45,6 +45,8 @@ func TestLogwardenModule(t *testing.T) {
 		rand.Seed(time.Now().UnixNano())
 		uniqueId := fmt.Sprintf("%d", rand.Intn(9999))
 
+		// Saved state we might need to pass between test stages
+		test_structure.SaveString(t, terraformDir, "projectId", "terraform-test-project-0000")
 		test_structure.SaveString(t, terraformDir, "savedGcpRegion", gcpRegion)
 		test_structure.SaveString(t, terraformDir, "savedUniqueId", uniqueId)
 
@@ -136,7 +138,7 @@ func TestLogwardenModule(t *testing.T) {
 		terraformOptions := test_structure.LoadTerraformOptions(t, terraformDir)
 
 		topicName := terraform.Output(t, terraformOptions, "topic_name")
-		projectId := terraformOptions.Vars["project_id"].(string)
+		projectId := test_structure.LoadString(t, terraformDir, "projectId")
 
 		client, err := pubsub.NewClient(ctx, projectId)
 
