@@ -154,12 +154,20 @@ func TestLogwardenModule(t *testing.T) {
 			Data: []byte(eventMessage),
 		})
 
-		// The Publish method returns a server-assigned message ID.
-		id, err := result.Get(ctx)
-		if err != nil {
-			log.Fatalf("Failed to publish: %v", err)
+		// iterate 5 times so it's not lost in noise in stackdriver
+		for i := 0; i < 5; i++ {
+
+			// The Publish method returns a server-assigned message ID.
+			id, err := result.Get(ctx)
+
+			if err != nil {
+				log.Fatalf("Failed to publish: %v", err)
+			}
+
+			log.Printf("Published message; msg ID: %v\n", id)
+
+			time.Sleep(2 * time.Second)
 		}
 
-		log.Printf("Published message; msg ID: %v\n", id)
 	})
 }
