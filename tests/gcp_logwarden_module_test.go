@@ -3,16 +3,13 @@ package test
 import (
 	"context"
 	"fmt"
-	"io"
 	"io/ioutil"
 	"log"
 	"math/rand"
-	"os"
 	"testing"
 	"time"
 
 	"cloud.google.com/go/pubsub"
-	"cloud.google.com/go/storage"
 	"github.com/gruntwork-io/terratest/modules/gcp"
 	"github.com/gruntwork-io/terratest/modules/terraform"
 	test_structure "github.com/gruntwork-io/terratest/modules/test-structure"
@@ -89,46 +86,6 @@ func TestLogwardenModule(t *testing.T) {
 
 	})
 
-	test_structure.RunTestStage(t, "upload_policy", func() {
-		// This test stage validates we can successfully push a rego
-		// policy to the GCS bucket
-
-		ctx := context.Background()
-
-		terraformOptions := test_structure.LoadTerraformOptions(t, terraformDir)
-
-		// This has to be a defined output in the module
-		bucketName := terraform.Output(t, terraformOptions, "policy_bucket_name")
-
-		filePath := "../tests/policy/gcp/mitre_privilege_escalation.rego"
-
-		client, err := storage.NewClient(ctx)
-		if err != nil {
-			log.Fatalf("Failed to create client: %v", err)
-		}
-
-		f, err := os.Open(filePath)
-
-		if err != nil {
-			log.Fatalf("Failed to open file: %v", err)
-		}
-
-		defer f.Close()
-
-		bkt := client.Bucket(bucketName)
-		obj := bkt.Object("mitre_privilege_escalation.rego")
-
-		wc := obj.NewWriter(ctx)
-
-		if _, err := io.Copy(wc, f); err != nil {
-			log.Fatalf("Failed to copy file: %v", err)
-		}
-
-		if err := wc.Close(); err != nil {
-			log.Fatalf("Failed to close: %v", err)
-		}
-	})
-
 	test_structure.RunTestStage(t, "push_event", func() {
 		// Pushes a dummy event: 'test_event.json' to the pubsub topic
 		// ideally logwarden should emit an event on its webhook
@@ -157,7 +114,6 @@ func TestLogwardenModule(t *testing.T) {
 		// iterate 5 times so it's not lost in noise in stackdriver
 		for i := 0; i < 5; i++ {
 
-			// The Publish method returns a server-assigned message ID.
 			id, err := result.Get(ctx)
 
 			if err != nil {

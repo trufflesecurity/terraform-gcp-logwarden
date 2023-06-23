@@ -29,3 +29,7 @@ variable "env_secret_id" {
 variable "container_args" {
   type = list(string)
 }
+
+variable "policy_source_dir" {
+  type = string
+}

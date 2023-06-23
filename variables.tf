@@ -47,3 +47,8 @@ variable "container_args" {
   type        = list(string)
   default     = []
 }
+
+variable "policy_source_dir" {
+  type        = string
+  description = "Repository folder where rego policies are stored."
+}

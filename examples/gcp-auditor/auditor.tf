@@ -9,4 +9,6 @@ module "auditor" {
   region              = var.region
   docker_image        = var.docker_image
   env_secret_id       = var.env_secret_id
+  container_args      = var.container_args
+  policy_source_dir   = var.policy_source_dir
 }

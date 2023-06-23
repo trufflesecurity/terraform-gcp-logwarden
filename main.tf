@@ -2,9 +2,14 @@ locals {
   default_args = [
     "--subscription=${google_pubsub_subscription.logwarden.name}",
     "--project=${var.project_id}",
-    "--secret-name=${var.env_secret_id}"
+    "--secret-name=${var.env_secret_id}",
+    "--policies=gs://${google_storage_bucket.rego_policies.name}",
+    "--json"
   ]
   run_args = concat(local.default_args, var.container_args)
+
+  source_dir = var.policy_dir
+  files      = fileset(local.source_dir, ".rego")
 }
 
 resource "google_project_service" "cloudrun" {
@@ -41,7 +46,8 @@ resource "google_cloud_run_v2_service" "main" {
   depends_on = [
     google_project_service.cloudrun,
     google_service_account.main,
-    google_pubsub_subscription.logwarden
+    google_pubsub_subscription.logwarden,
+    google_storage_bucket.rego_policies
   ]
 }
 
@@ -75,6 +81,13 @@ resource "google_storage_bucket" "rego_policies" {
   force_destroy               = "true"
   public_access_prevention    = "enforced"
   uniform_bucket_level_access = "true"
+}
+
+resource "google_storage_bucket_object" "policies" {
+  for_each = { for file in local.files : file => file }
+  name     = each.key
+  bucket   = google_storage_bucket.rego_policies.name
+  source   = "${local.source_dir}/${each.key}"
 }
 
 resource "google_logging_organization_sink" "audit_logs" {
