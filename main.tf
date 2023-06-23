@@ -8,7 +8,7 @@ locals {
   ]
   run_args = concat(local.default_args, var.container_args)
 
-  source_dir = var.policy_dir
+  source_dir = var.policy_source_dir
   files      = fileset(local.source_dir, ".rego")
 }
 
