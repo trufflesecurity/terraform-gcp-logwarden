@@ -1,8 +1,6 @@
 locals {
-  subscription = google_pubsub_subscription.logwarden.name
-  sub_name     = regex("projects/.*/subscriptions/(.*)", local.subscription)
   default_args = [
-    "--subscription=${local.sub_name}",
+    "--subscription=${google_pubsub_subscription.logwarden.name}",
     "--project=${var.project_id}",
     "--secret-name=${var.env_secret_id}",
     "--policies=gs://${google_storage_bucket.rego_policies.name}",
