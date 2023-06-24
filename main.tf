@@ -1,6 +1,8 @@
 locals {
+  subscription = google_pubsub_subscription.logwarden.name
+  sub_name     = replace(local.subscription, "/.*/", "")
   default_args = [
-    "--subscription=${google_pubsub_subscription.logwarden.name}",
+    "--subscription=${local.sub_name}",
     "--project=${var.project_id}",
     "--secret-name=${var.env_secret_id}",
     "--policies=gs://${google_storage_bucket.rego_policies.name}",
@@ -104,7 +106,7 @@ resource "google_logging_organization_sink" "audit_logs" {
 
 resource "google_pubsub_subscription_iam_member" "pubsub" {
   project      = var.project_id
-  subscription = google_pubsub_subscription.logwarden.name
+  subscription = google_pubsub_subscription.logwarden.id
   role         = "roles/pubsub.subscriber"
   member       = google_service_account.main.member
 
