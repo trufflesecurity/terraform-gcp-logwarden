@@ -1,6 +1,6 @@
 locals {
   subscription = google_pubsub_subscription.logwarden.name
-  sub_name     = replace(local.subscription, "/.*/", "")
+  sub_name     = regex("projects/.*/subscriptions/(.*)", local.subscription)
   default_args = [
     "--subscription=${local.sub_name}",
     "--project=${var.project_id}",
