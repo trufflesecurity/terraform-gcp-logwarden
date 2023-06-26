@@ -105,7 +105,7 @@ resource "google_logging_organization_sink" "audit_logs" {
 resource "google_pubsub_subscription_iam_member" "pubsub" {
   project      = var.project_id
   subscription = google_pubsub_subscription.logwarden.id
-  role         = "roles/pubsub.subscriber"
+  role         = "roles/pubsub.editor"
   member       = google_service_account.main.member
 
   depends_on = [

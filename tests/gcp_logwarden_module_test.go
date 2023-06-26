@@ -97,6 +97,7 @@ func TestLogwardenModule(t *testing.T) {
 		topicName := terraform.Output(t, terraformOptions, "topic_name")
 		projectId := test_structure.LoadString(t, terraformDir, "projectId")
 
+		// wait if pubsub needs time to be available
 		time.Sleep(300 * time.Second)
 
 		client, err := pubsub.NewClient(ctx, projectId)
