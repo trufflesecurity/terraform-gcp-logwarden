@@ -105,7 +105,7 @@ resource "google_logging_organization_sink" "audit_logs" {
 resource "google_pubsub_subscription_iam_member" "pubsub" {
   project      = var.project_id
   subscription = google_pubsub_subscription.logwarden.id
-  role         = "roles/pubsub.editor"
+  role         = "roles/pubsub.subscriber"
   member       = google_service_account.main.member
 
   depends_on = [
@@ -137,24 +137,4 @@ resource "google_pubsub_subscription" "logwarden" {
 
   enable_message_ordering = false
   depends_on              = [google_pubsub_topic.audit_logs]
-}
-
-resource "google_pubsub_subscription" "logwarden-test" {
-  name    = "logwarden-audit-logs-sub-test-${var.region}-${var.environment}"
-  topic   = google_pubsub_topic.audit_logs.name
-  project = var.project_id
-
-  message_retention_duration = "3600s"
-  retain_acked_messages      = true
-
-  ack_deadline_seconds = 20
-
-  expiration_policy {
-    ttl = "86400s" // 24h is the minimum
-  }
-  retry_policy {
-    minimum_backoff = "10s"
-  }
-
-  enable_message_ordering = false
 }
