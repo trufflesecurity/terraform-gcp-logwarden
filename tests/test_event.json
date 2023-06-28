@@ -1,0 +1,319 @@
+  {
+    "insertId": "-81ils7e8wh34",
+    "logName": "projects/terraform-test-project-0000/logs/cloudaudit.googleapis.com%2Factivity",
+    "protoPayload": {
+      "@type": "type.googleapis.com/google.cloud.audit.AuditLog",
+      "authenticationInfo": {
+        "principalEmail": "mike.vanbuskirk@trufflesec.com",
+        "principalSubject": "user:mike.vanbuskirk@trufflesec.com"
+      },
+      "authorizationInfo": [
+        {
+          "granted": true,
+          "permission": "resourcemanager.projects.setIamPolicy",
+          "resource": "projects/terraform-test-project-0000",
+          "resourceAttributes": {
+            "name": "projects/terraform-test-project-0000",
+            "service": "cloudresourcemanager.googleapis.com",
+            "type": "cloudresourcemanager.googleapis.com/Project"
+          }
+        },
+        {
+          "granted": true,
+          "permission": "resourcemanager.projects.setIamPolicy",
+          "resource": "projects/terraform-test-project-0000",
+          "resourceAttributes": {
+            "name": "projects/terraform-test-project-0000",
+            "service": "cloudresourcemanager.googleapis.com",
+            "type": "cloudresourcemanager.googleapis.com/Project"
+          }
+        }
+      ],
+      "methodName": "SetIamPolicy",
+      "request": {
+        "@type": "type.googleapis.com/google.iam.v1.SetIamPolicyRequest",
+        "policy": {
+          "auditConfigs": [
+            {
+              "auditLogConfigs": [
+                {
+                  "logType": "ADMIN_READ"
+                },
+                {
+                  "logType": "DATA_READ"
+                },
+                {
+                  "logType": "DATA_WRITE"
+                }
+              ],
+              "service": "cloudkms.googleapis.com"
+            },
+            {
+              "auditLogConfigs": [
+                {
+                  "logType": "ADMIN_READ"
+                },
+                {
+                  "logType": "DATA_READ"
+                },
+                {
+                  "logType": "DATA_WRITE"
+                }
+              ],
+              "service": "iam.googleapis.com"
+            },
+            {
+              "auditLogConfigs": [
+                {
+                  "logType": "ADMIN_READ"
+                },
+                {
+                  "logType": "DATA_READ"
+                },
+                {
+                  "logType": "DATA_WRITE"
+                }
+              ],
+              "service": "sts.googleapis.com"
+            },
+            {
+              "auditLogConfigs": [
+                {
+                  "logType": "ADMIN_READ"
+                },
+                {
+                  "logType": "DATA_READ"
+                },
+                {
+                  "logType": "DATA_WRITE"
+                }
+              ],
+              "service": "cloudresourcemanager.googleapis.com"
+            },
+            {
+              "auditLogConfigs": [
+                {
+                  "logType": "ADMIN_READ"
+                },
+                {
+                  "logType": "DATA_READ"
+                },
+                {
+                  "logType": "DATA_WRITE"
+                }
+              ],
+              "service": "serviceusage.googleapis.com"
+            }
+          ],
+          "bindings": [
+            {
+              "members": [
+                "serviceAccount:service-898730745222@gcp-sa-cloudkms.iam.gserviceaccount.com"
+              ],
+              "role": "roles/cloudkms.serviceAgent"
+            },
+            {
+              "members": [
+                "serviceAccount:service-898730745222@compute-system.iam.gserviceaccount.com"
+              ],
+              "role": "roles/compute.serviceAgent"
+            },
+            {
+              "members": [
+                "serviceAccount:service-898730745222@container-engine-robot.iam.gserviceaccount.com"
+              ],
+              "role": "roles/container.serviceAgent"
+            },
+            {
+              "members": [
+                "serviceAccount:service-898730745222@containerregistry.iam.gserviceaccount.com"
+              ],
+              "role": "roles/containerregistry.ServiceAgent"
+            },
+            {
+              "members": [
+                "serviceAccount:898730745222@cloudservices.gserviceaccount.com"
+              ],
+              "role": "roles/editor"
+            },
+            {
+              "members": [
+                "user:mike.vanbuskirk@trufflesec.com"
+              ],
+              "role": "roles/owner"
+            },
+            {
+              "members": [
+                "serviceAccount:service-898730745222@gcp-sa-pubsub.iam.gserviceaccount.com"
+              ],
+              "role": "roles/pubsub.serviceAgent"
+            },
+            {
+              "members": [
+                "user:mike.vanbuskirk@trufflesec.com"
+              ],
+              "role": "roles/iam.serviceAccountTokenCreator"
+            }
+          ],
+          "etag": "BwX+HNJDXX4="
+        },
+        "resource": "terraform-test-project-0000"
+      },
+      "requestMetadata": {
+        "callerIp": "34.172.189.72",
+        "callerSuppliedUserAgent": "google-cloud-sdk gcloud/432.0.0 command/gcloud.projects.add-iam-policy-binding invocation-id/5f17040ed049440e9a65ef220a07b0a0 environment/devshell environment-version/None client-os/LINUX client-os-ver/5.15.107 client-pltf-arch/x86_64 interactive/True from-script/False python/3.9.2 term/screen (Linux 5.15.107+),gzip(gfe)",
+        "destinationAttributes": {},
+        "requestAttributes": {}
+      },
+      "resourceName": "projects/terraform-test-project-0000",
+      "response": {
+        "@type": "type.googleapis.com/google.iam.v1.Policy",
+        "auditConfigs": [
+          {
+            "auditLogConfigs": [
+              {
+                "logType": "ADMIN_READ"
+              },
+              {
+                "logType": "DATA_READ"
+              },
+              {
+                "logType": "DATA_WRITE"
+              }
+            ],
+            "service": "cloudkms.googleapis.com"
+          },
+          {
+            "auditLogConfigs": [
+              {
+                "logType": "ADMIN_READ"
+              },
+              {
+                "logType": "DATA_READ"
+              },
+              {
+                "logType": "DATA_WRITE"
+              }
+            ],
+            "service": "iam.googleapis.com"
+          },
+          {
+            "auditLogConfigs": [
+              {
+                "logType": "ADMIN_READ"
+              },
+              {
+                "logType": "DATA_READ"
+              },
+              {
+                "logType": "DATA_WRITE"
+              }
+            ],
+            "service": "sts.googleapis.com"
+          },
+          {
+            "auditLogConfigs": [
+              {
+                "logType": "ADMIN_READ"
+              },
+              {
+                "logType": "DATA_READ"
+              },
+              {
+                "logType": "DATA_WRITE"
+              }
+            ],
+            "service": "cloudresourcemanager.googleapis.com"
+          },
+          {
+            "auditLogConfigs": [
+              {
+                "logType": "ADMIN_READ"
+              },
+              {
+                "logType": "DATA_READ"
+              },
+              {
+                "logType": "DATA_WRITE"
+              }
+            ],
+            "service": "serviceusage.googleapis.com"
+          }
+        ],
+        "bindings": [
+          {
+            "members": [
+              "serviceAccount:service-898730745222@gcp-sa-cloudkms.iam.gserviceaccount.com"
+            ],
+            "role": "roles/cloudkms.serviceAgent"
+          },
+          {
+            "members": [
+              "serviceAccount:service-898730745222@compute-system.iam.gserviceaccount.com"
+            ],
+            "role": "roles/compute.serviceAgent"
+          },
+          {
+            "members": [
+              "serviceAccount:service-898730745222@container-engine-robot.iam.gserviceaccount.com"
+            ],
+            "role": "roles/container.serviceAgent"
+          },
+          {
+            "members": [
+              "serviceAccount:service-898730745222@containerregistry.iam.gserviceaccount.com"
+            ],
+            "role": "roles/containerregistry.ServiceAgent"
+          },
+          {
+            "members": [
+              "serviceAccount:898730745222@cloudservices.gserviceaccount.com"
+            ],
+            "role": "roles/editor"
+          },
+          {
+            "members": [
+              "user:mike.vanbuskirk@trufflesec.com"
+            ],
+            "role": "roles/iam.serviceAccountTokenCreator"
+          },
+          {
+            "members": [
+              "user:mike.vanbuskirk@trufflesec.com"
+            ],
+            "role": "roles/owner"
+          },
+          {
+            "members": [
+              "serviceAccount:service-898730745222@gcp-sa-pubsub.iam.gserviceaccount.com"
+            ],
+            "role": "roles/pubsub.serviceAgent"
+          }
+        ],
+        "etag": "BwX+HavutPo="
+      },
+      "serviceData": {
+        "@type": "type.googleapis.com/google.iam.v1.logging.AuditData",
+        "policyDelta": {
+          "bindingDeltas": [
+            {
+              "action": "ADD",
+              "member": "user:mike.vanbuskirk@trufflesec.com",
+              "role": "roles/iam.serviceAccountTokenCreator"
+            }
+          ]
+        }
+      },
+      "serviceName": "cloudresourcemanager.googleapis.com",
+      "status": {}
+    },
+    "receiveTimestamp": "2023-06-14T21:31:15.748454446Z",
+    "resource": {
+      "labels": {
+        "project_id": "terraform-test-project-0000"
+      },
+      "type": "project"
+    },
+    "severity": "NOTICE",
+    "timestamp": "2023-06-14T21:31:15.243357Z"
+  }

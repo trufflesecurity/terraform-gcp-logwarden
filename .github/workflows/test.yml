@@ -1,0 +1,99 @@
+name: Test
+
+on:
+  push:
+    tags:
+      - v*
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+  id-token: write
+  issues: write
+  pull-requests: write
+
+jobs:
+  test-module:
+    name: 'Test'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: tests/
+    steps:
+      - name: Checkout repo
+        id: checkout
+        uses: actions/checkout@v3
+
+      - name: Setup Golang
+        uses: actions/setup-go@v3
+        with:
+          go-version: '1.19'
+      - run: go version
+
+      - name: Auth with GCP
+        id: 'auth'
+        uses: 'google-github-actions/auth@v1'
+        with:
+          workload_identity_provider: 'projects/475186730007/locations/global/workloadIdentityPools/github-ci/providers/github-ci'
+          service_account: 'terraform-testing@thog-admin.iam.gserviceaccount.com'
+
+      - name: Install addtional go packages
+        run: |
+          go install github.com/gotesttools/gotestfmt/v2/cmd/gotestfmt@latest
+          go install github.com/gruntwork-io/terratest/cmd/terratest_log_parser@latest
+
+      - name: Test
+        id: unittest
+        run: |
+          set -euo pipefail
+          go test -timeout 30m -p 1 -json ./... 2>&1 | tee /tmp/gotest.log | gotestfmt
+          terratest_log_parser -testlog /tmp/gotest.log -outputdir /tmp/test_results
+          rm -f /tmp/test_results/*\\n\"\}.log
+          cat /tmp/test_results/summary.log | jq > summary.txt
+
+      - name: Generate Summary
+        id: summary
+        if: github.event_name == 'pull_request'
+        run: |
+          SUMMARY=$(cat summary.txt)
+          echo "SUMMARY<<EOF" >> $GITHUB_ENV
+          echo "$SUMMARY" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+
+      - name: Find comment
+        uses: trufflesecurity/find-comment@main
+        id: fc
+        if: github.event_name == 'pull_request'
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          comment-author: 'github-actions[bot]'
+
+      - name: Create or update comment
+        uses: trufflesecurity/create-or-update-comment@main
+        id: comment
+        if: github.event_name == 'pull_request'
+        with:
+          comment-id: ${{ steps.fc.outputs.comment-id }}
+          issue-number: ${{ github.event.pull_request.number }}
+          body: |
+            #### Test ⚙️ ${{ steps.unittest.outcome }}
+
+            <details><summary>Test Results</summary>
+
+            ```diff
+            ${{ env.SUMMARY }}
+            ```
+
+            </details>
+
+            *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`*`;
+          edit-mode: replace
+
+      - name: Test Results Status
+        if: steps.unittest.outcome == 'failure'
+        run: exit 1
