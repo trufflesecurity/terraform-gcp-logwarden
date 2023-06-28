@@ -2,7 +2,7 @@ locals {
   default_args = [
     "--subscription=${google_pubsub_subscription.logwarden.name}",
     "--project=${var.project_id}",
-    "--secret-name=${var.env_secret_id}",
+    "--secret-name=${var.config_secret_id}",
     "--policies=gs://${google_storage_bucket.rego_policies.name}",
     "--json"
   ]
@@ -56,9 +56,9 @@ resource "google_service_account" "main" {
   project    = var.project_id
 }
 
-data "google_secret_manager_secret" "env" {
+data "google_secret_manager_secret" "config" {
   project   = var.project_id
-  secret_id = var.env_secret_id
+  secret_id = var.config_secret_id
 }
 
 resource "google_project_iam_member" "service" {
@@ -67,10 +67,10 @@ resource "google_project_iam_member" "service" {
   role    = "roles/iam.serviceAccountUser"
 }
 
-resource "google_secret_manager_secret_iam_member" "env" {
+resource "google_secret_manager_secret_iam_member" "config" {
   project   = var.project_id
   member    = google_service_account.main.member
-  secret_id = data.google_secret_manager_secret.env.id
+  secret_id = data.google_secret_manager_secret.config.id
   role      = "roles/secretmanager.secretAccessor"
 }
 

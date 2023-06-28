@@ -22,7 +22,7 @@ variable "ingress" {
   type = string
 }
 
-variable "env_secret_id" {
+variable "config_secret_id" {
   type = string
 }
 

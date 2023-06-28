@@ -37,7 +37,7 @@ variable "docker_image" {
   description = "Docker image for the auditor tool. Used by Cloud Run"
 }
 
-variable "env_secret_id" {
+variable "config_secret_id" {
   type        = string
   description = "GCP Secret Manager secret name/id for environment variable string."
 }
@@ -52,3 +52,4 @@ variable "policy_source_dir" {
   type        = string
   description = "Repository folder where rego policies are stored."
 }
+

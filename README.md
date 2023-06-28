@@ -31,19 +31,19 @@ No modules.
 | [google_pubsub_subscription.logwarden](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/pubsub_subscription) | resource |
 | [google_pubsub_subscription_iam_member.pubsub](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/pubsub_subscription_iam_member) | resource |
 | [google_pubsub_topic.audit_logs](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/pubsub_topic) | resource |
-| [google_secret_manager_secret_iam_member.env](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/secret_manager_secret_iam_member) | resource |
+| [google_secret_manager_secret_iam_member.config](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/secret_manager_secret_iam_member) | resource |
 | [google_service_account.main](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/service_account) | resource |
 | [google_storage_bucket.rego_policies](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/storage_bucket) | resource |
 | [google_storage_bucket_object.policies](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/storage_bucket_object) | resource |
-| [google_secret_manager_secret.env](https://registry.terraform.io/providers/hashicorp/google/latest/docs/data-sources/secret_manager_secret) | data source |
+| [google_secret_manager_secret.config](https://registry.terraform.io/providers/hashicorp/google/latest/docs/data-sources/secret_manager_secret) | data source |
 
 ## Inputs
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
+| <a name="input_config_secret_id"></a> [config\_secret\_id](#input\_config\_secret\_id) | GCP Secret Manager secret name/id for environment variable string. | `string` | n/a | yes |
 | <a name="input_container_args"></a> [container\_args](#input\_container\_args) | Runtime arguments for logwarden | `list(string)` | `[]` | no |
 | <a name="input_docker_image"></a> [docker\_image](#input\_docker\_image) | Docker image for the auditor tool. Used by Cloud Run | `string` | n/a | yes |
-| <a name="input_env_secret_id"></a> [env\_secret\_id](#input\_env\_secret\_id) | GCP Secret Manager secret name/id for environment variable string. | `string` | n/a | yes |
 | <a name="input_environment"></a> [environment](#input\_environment) | Environment of app, service, or context using this module. | `string` | n/a | yes |
 | <a name="input_ingress"></a> [ingress](#input\_ingress) | Ingress settings for the Google Cloud Run service | `string` | `"INGRESS_TRAFFIC_INTERNAL_ONLY"` | no |
 | <a name="input_logging_sink_filter"></a> [logging\_sink\_filter](#input\_logging\_sink\_filter) | n/a | `string` | `"LOG_ID(\"cloudaudit.googleapis.com/activity\") OR LOG_ID(\"externalaudit.googleapis.com/activity\") OR LOG_ID(\"cloudaudit.googleapis.com/system_event\") OR LOG_ID(\"externalaudit.googleapis.com/system_event\") OR LOG_ID(\"cloudaudit.googleapis.com/access_transparency\") OR LOG_ID(\"externalaudit.googleapis.com/access_transparency\")\n-protoPayload.serviceName=\"k8s.io\"\n"` | no |
