@@ -94,7 +94,7 @@ resource "google_pubsub_topic_iam_member" "logging_sink" {
   project = var.project_id
   topic   = google_pubsub_topic.audit_logs.name
   role    = "roles/pubsub.publisher"
-  member  = "serviceAccount:service-${var.project_id}@gcp-sa-logging.iam.gserviceaccount.com"
+  member  = "serviceAccount:cloud-logs@system.gserviceaccount.com"
 }
 
 resource "google_logging_organization_sink" "audit_logs" {
