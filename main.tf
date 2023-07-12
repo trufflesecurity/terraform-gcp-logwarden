@@ -95,7 +95,7 @@ resource "google_logging_organization_sink" "audit_logs" {
   description = "audit logs for the organization"
   org_id      = var.organization_id
 
-  destination = "pubsub.googleapis.com/${google_pubsub_topic.audit_logs.id}"
+  destination = "pubsub.googleapis.com/projects/${var.project_id}/topics/${google_pubsub_topic.audit_logs.id}"
 
   include_children = true
 
