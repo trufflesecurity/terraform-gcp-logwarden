@@ -90,6 +90,13 @@ resource "google_storage_bucket_object" "policies" {
   source   = "${local.source_dir}/${each.key}"
 }
 
+resource "google_pubsub_topic_iam_member" "logging_sink" {
+  project = var.project_id
+  topic   = google_pubsub_topic.audit_logs.name
+  role    = "roles/pubsub.publisher"
+  member  = "serviceAccount:service-${var.project_id}@gcp-sa-logging.iam.gserviceaccount.com"
+}
+
 resource "google_logging_organization_sink" "audit_logs" {
   name        = "logwarden-audit-logs-${var.region}-${var.environment}"
   description = "audit logs for the organization"
@@ -101,6 +108,7 @@ resource "google_logging_organization_sink" "audit_logs" {
 
   filter = var.logging_sink_filter
 }
+
 
 resource "google_pubsub_subscription_iam_member" "pubsub" {
   project      = var.project_id
