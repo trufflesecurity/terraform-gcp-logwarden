@@ -39,8 +39,8 @@ jobs:
         id: 'auth'
         uses: 'google-github-actions/auth@v1'
         with:
-          workload_identity_provider: 'projects/475186730007/locations/global/workloadIdentityPools/github-ci/providers/github-ci'
-          service_account: 'terraform-testing@thog-admin.iam.gserviceaccount.com'
+          workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.SERVICE_ACCOUNT }}
 
       - name: Install addtional go packages
         run: |
