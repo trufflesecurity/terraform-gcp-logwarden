@@ -34,7 +34,7 @@ EOF
 
 variable "docker_image" {
   type        = string
-  description = "Docker image for the auditor tool. Used by Cloud Run"
+  description = "Docker image for the logwarden tool. Used by Cloud Run"
 }
 
 variable "config_secret_id" {

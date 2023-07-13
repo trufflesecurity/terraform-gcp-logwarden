@@ -32,7 +32,7 @@ func TestLogwardenModule(t *testing.T) {
 		"us-south1",
 	}
 
-	terraformDir := "../examples/gcp-auditor"
+	terraformDir := "../examples/logwarden"
 
 	test_structure.RunTestStage(t, "setup", func() {
 

@@ -1,4 +1,4 @@
-module "auditor" {
+module "logwarden" {
   source = "../.."
 
   project_id          = local.project
