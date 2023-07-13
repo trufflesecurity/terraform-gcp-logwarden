@@ -133,7 +133,7 @@ resource "google_pubsub_subscription_iam_member" "pubsub" {
 
 resource "google_pubsub_topic_iam_member" "subscription" {
   project = var.project_id
-  topic   = google_pubsub_topic.audit_logs
+  topic   = google_pubsub_topic.audit_logs.name
   role    = "roles/pubsub.subscriber"
   member  = "serviceAccount:service-${data.google_project.main.number}@gcp-sa-pubsub.iam.gserviceaccount.com"
 }
