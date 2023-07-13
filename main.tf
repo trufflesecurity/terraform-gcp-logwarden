@@ -135,7 +135,7 @@ resource "google_pubsub_topic_iam_member" "subscription" {
   project = var.project_id
   topic   = google_pubsub_topic.audit_logs
   role    = "roles/pubsub.subscriber"
-  member  = "service-68346595174@gcp-sa-pubsub.iam.gserviceaccount.com"
+  member  = "serviceAccount:service-${data.google_project.main.number}@gcp-sa-pubsub.iam.gserviceaccount.com"
 }
 
 resource "google_pubsub_topic" "audit_logs" {
