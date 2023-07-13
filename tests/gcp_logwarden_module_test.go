@@ -51,7 +51,7 @@ func TestLogwardenModule(t *testing.T) {
 
 			TerraformDir: terraformDir,
 
-			VarFiles: []string{"../../tests/test.vars"},
+			VarFiles: []string{"../../tests/terraform.tfvars"},
 
 			Vars: map[string]interface{}{
 				// Since this is a non-generic module, the name is fixed, so we'll
