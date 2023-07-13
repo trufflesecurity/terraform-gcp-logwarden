@@ -84,7 +84,7 @@ resource "google_storage_bucket" "rego_policies" {
 }
 
 resource "google_storage_bucket_iam_member" "policies" {
-  bucket = google_storage_bucket.rego_policies
+  bucket = google_storage_bucket.rego_policies.name
   role   = "roles/storage.objectViewer"
   member = google_service_account.main.member
 }
