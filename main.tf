@@ -83,6 +83,12 @@ resource "google_storage_bucket" "rego_policies" {
   uniform_bucket_level_access = "true"
 }
 
+resource "google_storage_bucket_iam_member" "policies" {
+  bucket = google_storage_bucket.rego_policies
+  role   = "roles/storage.objectViewer"
+  member = google_service_account.main.member
+}
+
 resource "google_storage_bucket_object" "policies" {
   for_each = { for file in local.files : file => file }
   name     = each.key
