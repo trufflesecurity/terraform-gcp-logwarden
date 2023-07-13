@@ -12,6 +12,10 @@ locals {
   files      = fileset(local.source_dir, "*.rego")
 }
 
+data "google_project" "main" {
+  project_id = var.project_id
+}
+
 resource "google_project_service" "cloudrun" {
   service = "run.googleapis.com"
 }
@@ -125,6 +129,13 @@ resource "google_pubsub_subscription_iam_member" "pubsub" {
   depends_on = [
     google_pubsub_subscription.logwarden
   ]
+}
+
+resource "google_pubsub_topic_iam_member" "subscription" {
+  project = var.project_id
+  topic   = google_pubsub_topic.audit_logs
+  role    = "roles/pubsub.subscriber"
+  member  = "service-68346595174@gcp-sa-pubsub.iam.gserviceaccount.com"
 }
 
 resource "google_pubsub_topic" "audit_logs" {
