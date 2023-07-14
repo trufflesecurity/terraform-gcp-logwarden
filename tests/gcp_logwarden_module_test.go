@@ -107,7 +107,7 @@ func TestLogwardenModule(t *testing.T) {
 		terraformOptions := test_structure.LoadTerraformOptions(t, terraformDir)
 
 		topicName := terraform.Output(t, terraformOptions, "topic_name")
-		projectId := test_structure.LoadString(t, terraformDir, "projectId")
+		projectId := test_structure.LoadString(t, terraformDir, "savedProjectId")
 
 		client, err := pubsub.NewClient(ctx, projectId)
 
