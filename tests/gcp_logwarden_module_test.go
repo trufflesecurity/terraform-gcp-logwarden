@@ -52,7 +52,7 @@ func TestLogwardenModule(t *testing.T) {
 		uniqueId := fmt.Sprintf("%d", rand.Intn(9999))
 
 		// Saved state we might need to pass between test stages
-		test_structure.SaveString(t, terraformDir, "savedProjectId", "terraform-test-project-0000")
+		test_structure.SaveString(t, terraformDir, "savedProjectId", projectId)
 		test_structure.SaveString(t, terraformDir, "savedOrganizationId", organizationId)
 		test_structure.SaveString(t, terraformDir, "savedGcpRegion", gcpRegion)
 		test_structure.SaveString(t, terraformDir, "savedUniqueId", uniqueId)
