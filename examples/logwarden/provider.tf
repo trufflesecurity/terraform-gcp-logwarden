@@ -1,7 +1,3 @@
-locals {
-  project = "terraform-test-project-0000"
-}
-
 terraform {
   required_providers {
     google = {
@@ -13,7 +9,7 @@ terraform {
 
 
 provider "google" {
-  project         = local.project
+  project         = var.project_id
   request_timeout = "60s"
   region          = var.region
 }

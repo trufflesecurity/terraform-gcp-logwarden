@@ -36,6 +36,9 @@ func TestLogwardenModule(t *testing.T) {
 
 	test_structure.RunTestStage(t, "setup", func() {
 
+		// Explicitly define test project here
+		projectId := "terraform-test-project-0000"
+
 		gcpRegion := gcp.GetRandomRegion(t, "id", approvedRegions, nil)
 
 		// randomize with a unique seed for each test run to avoid name collisions
@@ -58,6 +61,7 @@ func TestLogwardenModule(t *testing.T) {
 				// randomize the environment name to avoid collisions
 				"environment": uniqueId,
 				"region":      gcpRegion,
+				"project_id":  projectId,
 			},
 
 			NoColor: true,
