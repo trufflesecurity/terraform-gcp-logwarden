@@ -1,4 +1,3 @@
-organization_id   = "355714717819"
 docker_image      = "us-docker.pkg.dev/thog-artifacts/public/logwarden:latest"
 filter            = <<EOF
 LOG_ID("cloudaudit.googleapis.com/activity") OR LOG_ID("externalaudit.googleapis.com/activity") OR LOG_ID("cloudaudit.googleapis.com/system_event") OR LOG_ID("externalaudit.googleapis.com/system_event") OR LOG_ID("cloudaudit.googleapis.com/access_transparency") OR LOG_ID("externalaudit.googleapis.com/access_transparency")

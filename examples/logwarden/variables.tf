@@ -7,7 +7,8 @@ variable "environment" {
 }
 
 variable "organization_id" {
-  type = string
+  type      = string
+  sensitive = true
 }
 
 variable "filter" {

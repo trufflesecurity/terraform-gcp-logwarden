@@ -49,6 +49,8 @@ jobs:
 
       - name: Test
         id: unittest
+        env:
+          ORGANIZATION_ID: ${{ secrets.ORGANIZATION_ID }}
         run: |
           set -euo pipefail
           go test -timeout 30m -p 1 -json ./... 2>&1 | tee /tmp/gotest.log | gotestfmt

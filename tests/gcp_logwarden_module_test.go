@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"log"
 	"math/rand"
+	"os"
 	"testing"
 	"time"
 
@@ -39,14 +40,20 @@ func TestLogwardenModule(t *testing.T) {
 		// Explicitly define test project here
 		projectId := "terraform-test-project-0000"
 
+		// Randomly choose one of the above regions to deploy in
 		gcpRegion := gcp.GetRandomRegion(t, "id", approvedRegions, nil)
+
+		// Get organization ID from the environment, which is passed in via GHA
+		// secrets
+		organizationId := os.Getenv("ORGANIZATION_ID")
 
 		// randomize with a unique seed for each test run to avoid name collisions
 		rand.Seed(time.Now().UnixNano())
 		uniqueId := fmt.Sprintf("%d", rand.Intn(9999))
 
 		// Saved state we might need to pass between test stages
-		test_structure.SaveString(t, terraformDir, "projectId", "terraform-test-project-0000")
+		test_structure.SaveString(t, terraformDir, "savedProjectId", "terraform-test-project-0000")
+		test_structure.SaveString(t, terraformDir, "savedOrganizationId", organizationId)
 		test_structure.SaveString(t, terraformDir, "savedGcpRegion", gcpRegion)
 		test_structure.SaveString(t, terraformDir, "savedUniqueId", uniqueId)
 
@@ -59,9 +66,10 @@ func TestLogwardenModule(t *testing.T) {
 			Vars: map[string]interface{}{
 				// Since this is a non-generic module, the name is fixed, so we'll
 				// randomize the environment name to avoid collisions
-				"environment": uniqueId,
-				"region":      gcpRegion,
-				"project_id":  projectId,
+				"environment":     uniqueId,
+				"region":          gcpRegion,
+				"project_id":      projectId,
+				"organization_id": organizationId,
 			},
 
 			NoColor: true,
