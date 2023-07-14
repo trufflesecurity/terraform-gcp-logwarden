@@ -1,7 +1,7 @@
 module "logwarden" {
   source = "../.."
 
-  project_id          = local.project
+  project_id          = var.project_id
   environment         = var.environment
   logging_sink_filter = var.filter
   organization_id     = var.organization_id
