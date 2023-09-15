@@ -9,7 +9,7 @@ locals {
   run_args = concat(local.default_args, var.container_args)
 
   source_dir = var.policy_source_dir
-  files      = fileset(local.source_dir, "*.rego")
+  files      = fileset(local.source_dir, "**.rego")
 }
 
 data "google_project" "main" {
