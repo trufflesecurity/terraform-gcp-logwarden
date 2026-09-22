@@ -35,6 +35,11 @@ jobs:
           go-version: '1.19'
       - run: go version
 
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: '1.4.7'
+
       - name: Auth with GCP
         id: 'auth'
         uses: 'google-github-actions/auth@v1'
