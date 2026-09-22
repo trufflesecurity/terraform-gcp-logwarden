@@ -53,3 +53,8 @@ variable "policy_source_dir" {
   description = "Repository folder where rego policies are stored."
 }
 
+variable "policy_revision" {
+  type        = string
+  description = "Optional content hash for the policy set; changes create a Cloud Run revision after policy upload."
+  default     = null
+}

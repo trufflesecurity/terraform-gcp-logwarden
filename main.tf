@@ -27,6 +27,13 @@ resource "google_cloud_run_v2_service" "main" {
   ingress  = var.ingress
 
   template {
+    # The worker compiles the GCS policies only during startup.  Changing this
+    # template label when a policy object changes creates a new revision after
+    # the objects have been uploaded.
+    labels = var.policy_revision == null ? null : {
+      "logwarden-policy-sha256" = substr(var.policy_revision, 0, 63)
+    }
+
     service_account = google_service_account.main.email
     scaling {
       max_instance_count = 1
@@ -54,7 +61,8 @@ resource "google_cloud_run_v2_service" "main" {
     google_project_service.cloudrun,
     google_service_account.main,
     google_pubsub_subscription.logwarden,
-    google_storage_bucket.rego_policies
+    google_storage_bucket.rego_policies,
+    google_storage_bucket_object.policies,
   ]
 }
 
