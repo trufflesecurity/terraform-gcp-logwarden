@@ -35,6 +35,11 @@ jobs:
           go-version: '1.19'
       - run: go version
 
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: '1.4.7'
+
       - name: Auth with GCP
         id: 'auth'
         uses: 'google-github-actions/auth@v1'
@@ -45,7 +50,7 @@ jobs:
       - name: Install addtional go packages
         run: |
           go install github.com/gotesttools/gotestfmt/v2/cmd/gotestfmt@latest
-          go install github.com/gruntwork-io/terratest/cmd/terratest_log_parser@latest
+          go install github.com/gruntwork-io/terratest/cmd/terratest_log_parser@v0.41.16
 
       - name: Test
         id: unittest

@@ -52,6 +52,7 @@ No modules.
 | <a name="input_ingress"></a> [ingress](#input\_ingress) | Ingress settings for the Google Cloud Run service | `string` | `"INGRESS_TRAFFIC_INTERNAL_ONLY"` | no |
 | <a name="input_logging_sink_filter"></a> [logging\_sink\_filter](#input\_logging\_sink\_filter) | n/a | `string` | `"LOG_ID(\"cloudaudit.googleapis.com/activity\") OR LOG_ID(\"externalaudit.googleapis.com/activity\") OR LOG_ID(\"cloudaudit.googleapis.com/system_event\") OR LOG_ID(\"externalaudit.googleapis.com/system_event\") OR LOG_ID(\"cloudaudit.googleapis.com/access_transparency\") OR LOG_ID(\"externalaudit.googleapis.com/access_transparency\")\n-protoPayload.serviceName=\"k8s.io\"\n"` | no |
 | <a name="input_organization_id"></a> [organization\_id](#input\_organization\_id) | ID of the parent organization. | `string` | n/a | yes |
+| <a name="input_policy_revision"></a> [policy\_revision](#input\_policy\_revision) | Optional content hash for the policy set; changes create a Cloud Run revision after policy upload. | `string` | `null` | no |
 | <a name="input_policy_source_dir"></a> [policy\_source\_dir](#input\_policy\_source\_dir) | Repository folder where rego policies are stored. | `string` | n/a | yes |
 | <a name="input_project_id"></a> [project\_id](#input\_project\_id) | ID of the parent project. Needed for service account IAM bindings. | `string` | n/a | yes |
 | <a name="input_region"></a> [region](#input\_region) | Region to place the CloudRun function in. | `string` | n/a | yes |
